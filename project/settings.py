@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "doctor",
     "patient",
     # External Modules
+    "rest_framework_simplejwt",
     "rest_framework",
 ]
 

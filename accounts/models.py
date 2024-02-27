@@ -35,15 +35,9 @@ class Patient(User):
 
 class PatientProfile(models.Model):
     user = models.OneToOneField(Patient, on_delete=models.CASCADE)
-
-    def get_full_name(self):
-        return self.user.full_name
-
-    def get_username(self):
-        return self.user.username
-
-    def get_email(self):
-        return self.user.email
+    full_name = models.CharField(max_length=255, null=True, blank=True)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
         return f"Profile for {self.user.username}"
@@ -69,15 +63,9 @@ class Doctor(User):
 
 class DoctorProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def get_full_name(self):
-        return self.user.full_name
-
-    def get_username(self):
-        return self.user.username
-
-    def get_email(self):
-        return self.user.email
+    full_name = models.CharField(max_length=255, null=True, blank=True)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
         return f"Profile for Doctor {self.user.username}"

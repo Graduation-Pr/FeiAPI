@@ -11,6 +11,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token["username"] = user.username
         token["email"] = user.email
+        token["full_name"] = user.full_name
 
         return token
 
