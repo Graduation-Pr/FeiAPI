@@ -12,8 +12,19 @@ class User(AbstractUser):
         DOCTOR = "DOCTOR", "Doctor"
 
     role = models.CharField(choices=Role.choices, max_length=10, default=Role.PATIENT)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
+
+    GENDER_CHOICES = (
+        ("M", "Male"),
+        ("F", "Female"),
+    )
+    gender = models.CharField(
+        max_length=1, choices=GENDER_CHOICES, null=True, blank=True
+    )
     reset_password_token = models.CharField(max_length=50, default="", blank=True)
-    reset_password_expire = models.DateTimeField(null =True, blank=True)
+    reset_password_expire = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return self.username
 
@@ -22,20 +33,12 @@ class PatientProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="patient_profile"
     )
-    image = models.ImageField(null=True, blank=True)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-    GENDER_CHOICES = (
-        ("M", "Male"),
-        ("F", "Female"),
-    )
-    gender = models.CharField(
-        max_length=1, choices=GENDER_CHOICES, null=True, blank=True
-    )
+
     CITY_CHOICES = (
         ("MANS", "Mansoura"),
         ("NDAM", "New-Dammitta"),
         ("CAI", "Cairo"),
-    ) 
+    )
     city = models.CharField(max_length=100, choices=CITY_CHOICES, null=True, blank=True)
     GOVERNMENT_CHOICES = (
         ("DAKH", "Dakhlia"),
@@ -55,11 +58,11 @@ class DoctorProfile(models.Model):
         User, on_delete=models.CASCADE, related_name="doctor_profile"
     )
     bio = models.TextField(null=True, blank=True)
-    image = models.ImageField(null=True, blank=True)
     verified = models.BooleanField(default=False)
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+
     def __str__(self):
         return f"{self.user.username}'s Doctor Profile"
 

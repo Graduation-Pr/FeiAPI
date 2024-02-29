@@ -1,9 +1,11 @@
-from .models import User
+from .models import User, DoctorProfile, PatientProfile
 from .serializers import (
     MyTokenObtainPairSerializer,
     RegisterDoctorSerializer,
     RegisterPatientSerializer,
     UserSerializer,
+    DoctorProfileSerializer,
+    PatientProfileSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
@@ -107,3 +109,15 @@ def reset_password(request, token):
     user.reset_password_expire = None
     user.save()
     return Response({"details": "Password reset done "})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_info(request):
+    if request.user.role == "DOCTOR":
+        doctor_profile = DoctorProfile.objects.get(user=request.user)
+        serializer = DoctorProfileSerializer(doctor_profile)
+    else:
+        patient_profile = PatientProfile.objects.get(user=request.user)
+        serializer = PatientProfileSerializer(patient_profile)
+    return Response(serializer.data)

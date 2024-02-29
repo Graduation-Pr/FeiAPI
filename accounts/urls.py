@@ -5,8 +5,8 @@ from .views import (
     RegisterDoctorView,
     update_user,
     reset_password,
-    forget_password
-    
+    forget_password,
+    user_info,
 )
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path("register/patient/", RegisterPatientView.as_view(), name="register_patient"),
     path("register/doctor/", RegisterDoctorView.as_view(), name="register_doctor"),
     path("update_user/", update_user),
-    path('forget_password/', forget_password ),
-    path('reset_password/<str:token>/',reset_password)
+    path("forget_password/", forget_password),
+    path("reset_password/<str:token>/", reset_password),
+    path("user_info/", user_info),
 ]

@@ -81,19 +81,41 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
         return user
 
 
-# class DoctorProfileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DoctorProfile
-#         fields = "__all__"
-
-
-# class PatientProfileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PatientProfile
-#         fields = "__all__"
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "username", "role")
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "phone_number",
+            "image",
+            "gender",
+            "role",
+        )
+
+
+class DoctorProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = DoctorProfile
+        fields = (
+            "user",
+            "bio",
+            "verified",
+            "rating",
+        )
+
+
+class PatientProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = PatientProfile
+        fields = (
+            "user",
+            "city",
+            "government",
+        )
