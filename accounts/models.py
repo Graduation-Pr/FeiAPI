@@ -1,5 +1,7 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class User(AbstractUser):
@@ -8,64 +10,45 @@ class User(AbstractUser):
         PATIENT = "PATIENT", "Patient"
         DOCTOR = "DOCTOR", "Doctor"
 
-    full_name = models.CharField(max_length=255, null=True, blank=True)
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(null=True, blank=True)
-    role = models.CharField(max_length=50, choices=Role.choices)
+    role = models.CharField(choices=Role.choices, max_length=10, default=Role.PATIENT)
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            return super().save(*args, **kwargs)
-
-
-class PatientManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.PATIENT)
-
-
-class Patient(User):
-    base_role = User.Role.PATIENT
-
-    Patient = PatientManager()
-
-    class Meta:
-        proxy = True
+    def __str__(self):
+        return self.username
 
 
 class PatientProfile(models.Model):
-    user = models.OneToOneField(Patient, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255, null=True, blank=True)
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(null=True, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="patient_profile"
+    )
+    # Add relevant patient-specific fields here
+    # For example:
+    # date_of_birth = models.DateField(blank=True, null=True)
+    # phone_number = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
-        return f"Profile for {self.user.username}"
-
-
-class DoctorManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.DOCTOR)
-
-
-class Doctor(User):
-    base_role = User.Role.DOCTOR
-
-    doctor = DoctorManager()
-
-    class Meta:
-        proxy = True
-
-    def welcome(self):
-        return "Only for doctors"
+        return f"{self.user.username}'s Patient Profile"
 
 
 class DoctorProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255, null=True, blank=True)
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(null=True, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="doctor_profile"
+    )
+    # Add relevant doctor-specific fields here
+    # For example:
+    # specialty = models.CharField(max_length=50, blank=True)
+    # hospital = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"Profile for Doctor {self.user.username}"
+        return f"{self.user.username}'s Doctor Profile"
+
+
+# Signals to create profiles automatically upon user creation
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.role == User.Role.PATIENT:
+            PatientProfile.objects.create(user=instance)
+        elif instance.role == User.Role.DOCTOR:
+            DoctorProfile.objects.create(user=instance)

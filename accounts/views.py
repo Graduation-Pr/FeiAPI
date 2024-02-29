@@ -1,24 +1,25 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import get_object_or_404
-from .models import User, Doctor, Patient, DoctorProfile, PatientProfile
+from .models import User
 from .serializers import (
     MyTokenObtainPairSerializer,
     RegisterDoctorSerializer,
     RegisterPatientSerializer,
-    DoctorProfileSerializer,
-    PatientProfileSerializer,
+    UserSerializer,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from rest_framework.response import Response
-from .models import DoctorProfile, PatientProfile
-from .serializers import DoctorProfileSerializer, PatientProfileSerializer
+from django.contrib.auth.hashers import make_password
+
+
+# from rest_framework.permissions import IsAuthenticated
+# from rest_framework.decorators import api_view, permission_classes
+# from rest_framework.permissions import IsAuthenticated
+# from rest_framework.response import Response
+# from .serializers import DoctorProfileSerializer, PatientProfileSerializer
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -26,7 +27,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 class RegisterPatientView(generics.CreateAPIView):
-    queryset = Patient.objects.all()
+    queryset = User.objects.filter(role=User.Role.PATIENT)
     permission_classes = [AllowAny]
     serializer_class = RegisterPatientSerializer
 
@@ -35,7 +36,7 @@ class RegisterPatientView(generics.CreateAPIView):
 
 
 class RegisterDoctorView(generics.CreateAPIView):
-    queryset = Doctor.objects.all()
+    queryset = User.objects.filter(role=User.Role.DOCTOR)
     permission_classes = [AllowAny]
     serializer_class = RegisterDoctorSerializer
 
@@ -43,13 +44,23 @@ class RegisterDoctorView(generics.CreateAPIView):
         serializer.save(role=User.Role.DOCTOR)
 
 
-@api_view(["GET"])
+@api_view(["PUT"])
 @permission_classes([IsAuthenticated])
-def user_info(request):
-    if request.user.role == "DOCTOR":
-        doctor_profile = DoctorProfile.objects.get(user=request.user)
-        serializer = DoctorProfileSerializer(doctor_profile)
+def update_user(request):
+    user = request.user
+
+    if "password" in request.data:
+        password = make_password(request.data.get("password"))
+        user.set_password(password)
+
+    serializer = UserSerializer(instance=user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
     else:
-        patient_profile = PatientProfile.objects.get(user=request.user)
-        serializer = PatientProfileSerializer(patient_profile)
-    return Response(serializer.data)
+        return Response(
+            {"Error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+

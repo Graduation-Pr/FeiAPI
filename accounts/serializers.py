@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User, DoctorProfile, PatientProfile, Doctor, Patient
+from .models import User, DoctorProfile, PatientProfile
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -11,7 +11,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token["username"] = user.username
         token["email"] = user.email
-        token["full_name"] = user.full_name
+        # token["full_name"] = user.full_name
 
         return token
 
@@ -21,14 +21,14 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     role = serializers.CharField(read_only=True, default=User.Role.PATIENT)
-    full_name = serializers.CharField(max_length=255)
 
     class Meta:
-        model = Patient
+        model = User
         fields = [
             "username",
             "email",
-            "full_name",
+            "first_name",
+            "last_name",
             "password",
             "confirm_password",
             "role",
@@ -42,9 +42,9 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = User.objects.create_user(**validated_data)
-        validated_data.pop("password")
-        validated_data.pop("role")
-        PatientProfile.objects.create(user=user, **validated_data)
+        # validated_data.pop("password")
+        # validated_data.pop("role")
+        # PatientProfile.objects.create(user=user, **validated_data)
         return user
 
 
@@ -53,14 +53,15 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     role = serializers.CharField(read_only=True, default=User.Role.DOCTOR)
-    full_name = serializers.CharField(max_length=255)
+    # full_name = serializers.CharField(max_length=255)
 
     class Meta:
-        model = Doctor
+        model = User
         fields = [
             "username",
             "email",
-            "full_name",
+            "first_name",
+            "last_name",
             "password",
             "confirm_password",
             "role",
@@ -74,19 +75,25 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = User.objects.create_user(**validated_data)
-        validated_data.pop("password")
-        validated_data.pop("role")
-        DoctorProfile.objects.create(user=user, **validated_data)
+        # validated_data.pop("password")
+        # validated_data.pop("role")
+        # DoctorProfile.objects.create(user=user, **validated_data)
         return user
 
 
-class DoctorProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DoctorProfile
-        fields = "__all__"
+# class DoctorProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = DoctorProfile
+#         fields = "__all__"
 
 
-class PatientProfileSerializer(serializers.ModelSerializer):
+# class PatientProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PatientProfile
+#         fields = "__all__"
+
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PatientProfile
-        fields = "__all__"
+        model = User
+        fields = ("first_name", "last_name", "email", "username", "role")

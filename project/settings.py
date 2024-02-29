@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-&)360ju$*wzsmy1fok5jzd&9z^xc*(zq64n7^$*+0cn!rg@$s5"
+SECRET_KEY = "django-insecure--qmw3qcw^90^(b*7!3lbyh31hzxrrnke%x31=@#s7f_)uosme6"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,10 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Internal Apps
     "accounts",
-    "doctor",
-    "patient",
     # External Modules
     "rest_framework_simplejwt",
     "rest_framework",
@@ -131,7 +128,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# AUTH_USER_MODEL = "accounts.User"
+
 AUTH_USER_MODEL = "accounts.User"
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
