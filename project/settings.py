@@ -55,6 +55,18 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '50a017e2653577'
+EMAIL_HOST_PASSWORD = '9465e99caf687f'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+
+
 ROOT_URLCONF = "project.urls"
 
 TEMPLATES = [
