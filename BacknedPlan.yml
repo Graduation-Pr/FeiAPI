@@ -1,0 +1,114 @@
+Stage1: Auth&Profile
+    #file_management:
+        !jwt (done)
+        !installed-apps 
+        !jazzmin (done)
+        !jwt-settings (done)
+        !cors-headers
+        !swagger  (done)
+        !code refactoring 
+
+    #Custome_User_Model(AbstractUser) (done)
+        -User
+        -Docotr
+
+
+    #User(custome_User_Model) (done)
+        -username (login)
+        -email (email)
+
+
+    #Profile: >> signals  (done)
+        -first_name (charfiled)
+        -last_name (charfiled)
+        -birth_date (datetimefiled)
+        -government [choices]
+        -city [choices]
+        -phone_number [positive-integer-filed]
+        -gender [choices]
+        
+        !Profile_Data_Function 
+
+
+    #Authentication: >> jwt (done)
+        1-user
+            register*
+            login*(encode the user data in the token!)
+            user_profile* 
+            reset_password*
+
+                        2-doctor
+                            register
+                            login
+                            user_profile
+                            reset_password
+
+
+Stage2: Pharmacy
+    #Creating Pharmacy Model 
+        -attrs
+        -fav
+    # CRUDS
+        -top 5 objects
+        -fliter(type)
+    #Creating Cart Model
+        -add, remove 
+
+Stage3: Labs
+    #creating Labs Model
+        -attrs
+    # CRUDS
+        -top 5 objects
+        -fliter(type)
+        -set appointment
+
+Stage4: HomePage
+    -top 5 docs
+    -top 3 pharms
+    -labs
+    -user_profile
+
+Stage6: Bookings
+    -book function 
+    -user=> doctor relationship
+    -state
+    -cancel[reason, description, reschedual] - confirm
+    -comment - plan
+
+Stage7: Chats
+
+
+Stage8: Plans
+    #CRUDS
+    
+    #Medcines
+        -dose
+        -image
+
+
+Stage9: Doctor's Home
+    # Plans
+
+    #Lab_results
+
+    -reviews
+    # bookings
+    # chats
+    # patients
+
+
+Stage10: patient_book
+    -name
+    -problem
+    -pay_state
+    -amount
+    -lab_restults
+
+Stage11: Payment
+
+
+
+Stage12: AI integration
+
+
+Stage13: DB-filling
