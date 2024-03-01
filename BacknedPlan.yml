@@ -7,7 +7,7 @@ Stage1: Auth&Profile
         !cors-headers
         !swagger  (done)
         !code refactoring 
-        !static_&_media_settings
+        !static_&_media_settings  (done)
 
 
     #Custome_User_Model(AbstractUser) (done)
@@ -29,7 +29,7 @@ Stage1: Auth&Profile
         -phone_number [positive-integer-filed]
         -gender [choices]
         
-        !Profile_Data_Function 
+        !Profile_Data_Function   (done)
 
 
     #Authentication: >> jwt (done)
@@ -51,7 +51,7 @@ Stage2: Pharmacy
         -attrs
         -fav
     # CRUDS
-        -top 5 objects
+        -top 3 pharm
         -fliter(type)
     #Creating Cart Model
         -add, remove 
@@ -62,7 +62,7 @@ Stage3: Labs
     # CRUDS
         -top 5 objects
         -fliter(type)
-        -set appointment
+    #set appointment
 
 Stage4: HomePage
     -top 5 docs
