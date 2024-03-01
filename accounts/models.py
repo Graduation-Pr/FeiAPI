@@ -16,7 +16,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     image = models.ImageField(
         null=True, blank=True, upload_to="profile_pics", default="user-avatar.png"
-        )
+    )
 
     GENDER_CHOICES = (
         ("M", "Male"),
@@ -63,7 +63,7 @@ class DoctorProfile(models.Model):
     bio = models.TextField(null=True, blank=True)
     verified = models.BooleanField(default=False)
     rating = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)]
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
 
     def __str__(self):

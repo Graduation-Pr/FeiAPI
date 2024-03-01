@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import os
+import django_heroku
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +30,7 @@ SECRET_KEY = "django-insecure--qmw3qcw^90^(b*7!3lbyh31hzxrrnke%x31=@#s7f_)uosme6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -171,3 +174,4 @@ MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+django_heroku.settings(locals())

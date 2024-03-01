@@ -105,7 +105,7 @@ def forget_password(request):
     user.save()
 
     # host = get_current_host(request)
-    link = "http://localhost:8000/reset_password/{token}".format(token=token)
+    link = "http://localhost:8000/accounts/reset_password/{token}/".format(token=token)
     body = "Your password reset link is : {link}".format(link=link)
     send_mail("Paswword reset from Fie", body, "Fie@gmail.com", [data["email"]])
     return Response(
