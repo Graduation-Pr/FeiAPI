@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     MyTokenObtainPairView,
     RegisterPatientView,
@@ -9,6 +10,7 @@ from .views import (
     user_info,
 )
 
+
 urlpatterns = [
     path("token/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("register/patient/", RegisterPatientView.as_view(), name="register_patient"),
@@ -18,3 +20,6 @@ urlpatterns = [
     path("reset_password/<str:token>/", reset_password),
     path("user_info/", user_info),
 ]
+
+
+# urlpatterns += router.urls

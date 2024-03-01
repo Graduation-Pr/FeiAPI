@@ -90,6 +90,8 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "username",
             "phone_number",
+            "city",
+            "government",
             "image",
             "gender",
             "role",
@@ -97,7 +99,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = DoctorProfile
@@ -110,7 +112,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = PatientProfile

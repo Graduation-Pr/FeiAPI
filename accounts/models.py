@@ -14,7 +14,9 @@ class User(AbstractUser):
 
     role = models.CharField(choices=Role.choices, max_length=10, default=Role.PATIENT)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    image = models.ImageField(null=True, blank=True, upload_to="profile_pics")
+    image = models.ImageField(
+        null=True, blank=True, upload_to="profile_pics", default="user-avatar.png"
+        )
 
     GENDER_CHOICES = (
         ("M", "Male"),
@@ -25,15 +27,6 @@ class User(AbstractUser):
     )
     reset_password_token = models.CharField(max_length=50, default="", blank=True)
     reset_password_expire = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return self.username
-
-
-class PatientProfile(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="patient_profile"
-    )
 
     CITY_CHOICES = (
         ("MANS", "Mansoura"),
@@ -48,6 +41,15 @@ class PatientProfile(models.Model):
     )
     government = models.CharField(
         max_length=100, choices=GOVERNMENT_CHOICES, null=True, blank=True
+    )
+
+    def __str__(self):
+        return self.username
+
+
+class PatientProfile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="patient_profile"
     )
 
     def __str__(self):

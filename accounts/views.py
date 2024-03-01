@@ -5,7 +5,7 @@ from .serializers import (
     RegisterPatientSerializer,
     UserSerializer,
     DoctorProfileSerializer,
-    PatientProfileSerializer
+    PatientProfileSerializer,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
@@ -52,14 +52,38 @@ def update_user(request):
         password = make_password(request.data.get("password"))
         user.set_password(password)
 
-    serializer = UserSerializer(instance=user, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    user_serializer = UserSerializer(instance=user, data=request.data, partial=True)
+    if user_serializer.is_valid():
+        user_serializer.save()
     else:
         return Response(
-            {"Error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            {"Error": user_serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if user.role == User.Role.DOCTOR:
+        profile = user.doctor_profile
+        profile_serializer = DoctorProfileSerializer(
+            instance=profile, data=request.data, partial=True
+        )
+    elif user.role == User.Role.PATIENT:
+        profile = user.patient_profile
+        profile_serializer = PatientProfileSerializer(
+            instance=profile, data=request.data, partial=True
+        )
+    else:
+        return Response(
+            {"Error": "Invalid user role"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if profile_serializer.is_valid():
+        profile_serializer.save()
+        return Response(
+            {"profile": profile_serializer.data},
+            status=status.HTTP_200_OK,
+        )
+    else:
+        return Response(
+            {"Error": profile_serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
 
 
