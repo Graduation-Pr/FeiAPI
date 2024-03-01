@@ -7,6 +7,8 @@ Stage1: Auth&Profile
         !cors-headers
         !swagger  (done)
         !code refactoring 
+        !static_&_media_settings
+
 
     #Custome_User_Model(AbstractUser) (done)
         -User

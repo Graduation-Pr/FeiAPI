@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
+from PIL import Image
 
 
 class User(AbstractUser):
@@ -13,7 +14,7 @@ class User(AbstractUser):
 
     role = models.CharField(choices=Role.choices, max_length=10, default=Role.PATIENT)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ImageField(null=True, blank=True, upload_to="profile_pics")
 
     GENDER_CHOICES = (
         ("M", "Male"),
