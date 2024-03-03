@@ -118,6 +118,5 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         model = PatientProfile
         fields = (
             "user",
-            "city",
-            "government",
+            "birth_date",
         )

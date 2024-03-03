@@ -23,7 +23,7 @@ Stage1: Auth&Profile
     #Profile: >> signals  (done)
         -first_name (charfiled)
         -last_name (charfiled)
-        -birth_date (datetimefiled)
+        -birth_date (datetimefiled) --
         -government [choices]
         -city [choices]
         -phone_number [positive-integer-filed]
@@ -104,7 +104,7 @@ Stage10: patient_book
     -problem
     -pay_state
     -amount
-    -lab_restults
+    -medical_history
 
 Stage11: Payment
 

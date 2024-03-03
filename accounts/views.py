@@ -91,7 +91,7 @@ def get_current_host(request):
     protocol = request.is_secure() and "https" or "http"
     host = request.get_host()
 
-    return f"{protocol}//{host}"
+    return f"{protocol}://{host}"
 
 
 @api_view(["POST"])
@@ -104,8 +104,9 @@ def forget_password(request):
     user.reset_password_expire = expire_date
     user.save()
 
-    # host = get_current_host(request)
-    link = "http://localhost:8000/accounts/reset_password/{token}/".format(token=token)
+    host = get_current_host(request)
+    # print(host)
+    link = "{host}/accounts/reset_password/{token}/".format(token=token,host=host)
     body = "Your password reset link is : {link}".format(link=link)
     send_mail("Paswword reset from Fie", body, "Fie@gmail.com", [data["email"]])
     return Response(

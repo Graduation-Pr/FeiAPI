@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure--qmw3qcw^90^(b*7!3lbyh31hzxrrnke%x31=@#s7f_)uosme6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Installed Apps
     "accounts",
     # External Modules
     "rest_framework_simplejwt",
@@ -61,8 +62,8 @@ MIDDLEWARE = [
 ]
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = "sandbox.smtp.mailtrap.io"
 EMAIL_HOST_USER = "50a017e2653577"
 EMAIL_HOST_PASSWORD = "9465e99caf687f"
@@ -151,6 +152,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 REST_FRAMEWORK = {
