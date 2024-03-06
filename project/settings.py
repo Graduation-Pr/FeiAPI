@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Installed Apps
     "accounts",
+    "pharmacy",
     # External Modules
     "rest_framework_simplejwt",
     "rest_framework",
