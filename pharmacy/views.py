@@ -43,6 +43,9 @@ class CartViewSet(
 class CartItemsViewSet(ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
 
+    def save(self, *args, **kwargs):
+        pass
+
     def get_queryset(self):
         return CartItems.objects.filter(cart_id=self.kwargs["cart_pk"])
 

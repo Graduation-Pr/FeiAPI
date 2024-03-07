@@ -54,7 +54,7 @@ Stage2: Pharmacy
         -top 3 pharm
         -fliter(type)
     #Creating Cart Model
-        -add, remove 
+        -add, remove , out of stock 
 
 Stage3: Labs
     #creating Labs Model
