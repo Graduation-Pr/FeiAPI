@@ -19,23 +19,35 @@ class Pharmacy(models.Model):
 
 
 
-class Category(models.Model):
-    title = models.CharField(max_length=55)
+class Category(models.TextChoices):
 
-    #MEDICATIONS = 'Medications'
-    #VITAMINS = 'Vitamins&supplement'
-    #HOME_HEALTH_CARE = 'Home Health Care'
+    MEDICATIONS = "Medications"
+    VITAMINS = "Vitamins&supplement"
+    HOME_HEALTH_CARE = "Home Health Care"
 
+class Subcategory(models.TextChoices):
+    # Subcategories for Medications
+    PAINKILLERS = "Painkillers", "Painkillers"
+    CLOT_MEDICATIONS = "Clot-medications", "Clot-medications"
+    BRONCHODILATORS = "Bronchodilators", "Bronchodilators"
 
+    # Subcategories for Vitamins & Supplements
+    VITAMIN_A = "Vitamin A", "Vitamin A"
+    VITAMIN_C = "Vitamin C", "Vitamin C"
+    VITAMIN_D = "Vitamin D", "Vitamin D"
+
+    # Subcategories for Home Health Care
+    DIABETES_CARE = "Diabetes Care", "Diabetes Care"
+    BLOOD_PRESSURE_MONITOR = "Blood Pressure Monitor", "Blood Pressure Monitor"
+    THERMOMETERS = "Thermometers", "Thermometers"
 
 class Product(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
     image = models.ImageField(null=True, blank=True, upload_to="profile_pics", default="")
     price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     description = models.TextField(max_length=100, default="", blank=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    
-    #category = models.CharField(max_length=40, choices=Category.choices)
+    category = models.CharField(max_length=40, choices=Category.choices)
+    subcategory = models.CharField(max_length=40, choices=Subcategory.choices, null=True, blank=True)
     stock = models.IntegerField(default=0)
     
 

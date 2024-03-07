@@ -100,42 +100,7 @@ class Migration(migrations.Migration):
                 ),
                 ("description", models.TextField(default="", max_length=100)),
                 ("stock", models.IntegerField(default=0)),
-                (
-                    "category",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="pharmacy.category",
-                    ),
-                ),
             ],
         ),
-        migrations.CreateModel(
-            name="Cart",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "cart_id",
-                    models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-                (
-                    "products",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="pharmacy.product",
-                    ),
-                ),
-            ],
-        ),
+        
     ]
