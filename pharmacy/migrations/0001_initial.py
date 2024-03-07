@@ -102,5 +102,4 @@ class Migration(migrations.Migration):
                 ("stock", models.IntegerField(default=0)),
             ],
         ),
-        
     ]
