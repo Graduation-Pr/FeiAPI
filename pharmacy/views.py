@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
 
+from pharmacy.filters import ProductFilter
+
 # from django.contrib.auth.models import User
 from .models import Cart, CartItems, Product
 from .serializers import (
@@ -10,8 +12,11 @@ from .serializers import (
     ProductSerializer,
     UpdateCartItemSerializer,
 )
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -20,14 +25,21 @@ from rest_framework.mixins import (
 )
 
 
-class ListProduct(generics.ListCreateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_products(request):
+
+    filterset = ProductFilter(request.GET, queryset=Product.objects.all().order_by('id'))
+    paginator = PageNumberPagination()
+    paginator.page_size = 6 # number of products in one page
+    queryset = paginator.paginate_queryset(filterset.qs, request)
+
+    serializer = ProductSerializer(queryset, many=True)
+    return Response({'product':serializer.data})
 
 
 class DetailProduct(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -35,7 +47,7 @@ class DetailProduct(generics.RetrieveUpdateDestroyAPIView):
 class CartViewSet(
     CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet
 ):
-
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
 
@@ -43,8 +55,7 @@ class CartViewSet(
 class CartItemsViewSet(ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
 
-    def save(self, *args, **kwargs):
-        pass
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return CartItems.objects.filter(cart_id=self.kwargs["cart_pk"])
