@@ -23,7 +23,6 @@ class Pharmacy(models.Model):
 
 
 class Category(models.TextChoices):
-
     MEDICATIONS = "Medications"
     VITAMINS = "Vitamins&supplement"
     HOME_HEALTH_CARE = "Home Health Care"

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pharmacy", "0002_delete_category_product_category_product_subcategory"),
     ]

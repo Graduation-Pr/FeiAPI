@@ -4,6 +4,7 @@ black==24.2.0
 click==8.1.7
 dj-database-url==2.1.0
 Django==5.0.2
+django-filter==23.5
 django-heroku==0.3.1
 django-jazzmin==2.6.0
 djangorestframework==3.14.0
