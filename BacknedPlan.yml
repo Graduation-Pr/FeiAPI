@@ -47,7 +47,7 @@ Stage1: Auth&Profile
                             reset_password
 
 
-Stage2: Pharmacy
+Stage2: Pharmacy(done)
     #Creating Pharmacy Model 
         -attrs
         -fav
@@ -57,7 +57,7 @@ Stage2: Pharmacy
     #Creating Cart Model
         -add, remove , out of stock 
 
-Stage3: Labs
+Stage3: Labs(done)
     #creating Labs Model
         -attrs
     # CRUDS
@@ -71,17 +71,17 @@ Stage4: HomePage
     -labs
     -user_profile
 
-Stage6: Bookings
+Stage5: Bookings
     -book function 
     -user=> doctor relationship
     -state
     -cancel[reason, description, reschedual] - confirm
     -comment - plan
 
-Stage7: Chats
+Stage6: Chats
 
 
-Stage8: Plans
+Stage7: Plans
     #CRUDS
     
     #Medcines
@@ -89,7 +89,7 @@ Stage8: Plans
         -image
 
 
-Stage9: Doctor's Home
+Stage8: Doctor's Home
     # Plans
 
     #Lab_results
@@ -100,7 +100,7 @@ Stage9: Doctor's Home
     # patients
 
 
-Stage10: patient_book
+Stage9: patient_book
     -name
     -problem
     -pay_state

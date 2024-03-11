@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "accounts",
     "pharmacy",
     "orders",
-    # "payment",
+    "laboratory",
     # External Modules
     "rest_framework_simplejwt",
     "rest_framework",

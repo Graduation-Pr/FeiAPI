@@ -7,7 +7,7 @@ from accounts.models import User
 class Pharmacy(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
     image = models.ImageField(
-        null=True, blank=True, upload_to="profile_pics", default=""
+        null=True, blank=True, upload_to="pharmacy_pics", default="pharmacy_icon.png"
     )
 
     CITY_CHOICES = (
@@ -49,7 +49,7 @@ class Subcategory(models.TextChoices):
 class Product(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
     image = models.ImageField(
-        null=True, blank=True, upload_to="profile_pics", default="medicine.png"
+        null=True, blank=True, upload_to="product_pics", default="medicine.png"
     )
     price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     description = models.TextField(max_length=100, default="", blank=False)
