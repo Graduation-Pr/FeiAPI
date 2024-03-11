@@ -43,9 +43,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Installed Apps
+    # Internal Apps
     "accounts",
     "pharmacy",
+    "orders",
+    # "payment",
     # External Modules
     "rest_framework_simplejwt",
     "rest_framework",
@@ -153,7 +155,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
@@ -179,3 +181,6 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 django_heroku.settings(locals())
+
+
+FLW_SEC_KEY = "FLWSECK_TEST-524202ecc0408804b8fbeae288174021-X"

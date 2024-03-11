@@ -8,6 +8,7 @@ Stage1: Auth&Profile
         !swagger  (done)
         !code refactoring 
         !static_&_media_settings  (done)
+        !admin_site_customization
 
 
     #Custome_User_Model(AbstractUser) (done)

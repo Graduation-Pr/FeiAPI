@@ -39,7 +39,7 @@ def get_all_products(request):
     return Response({"product": serializer.data})
 
 
-class DetailProduct(generics.RetrieveUpdateDestroyAPIView):
+class DetailProduct(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer

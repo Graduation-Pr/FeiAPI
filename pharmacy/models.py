@@ -20,6 +20,7 @@ class Pharmacy(models.Model):
     rating = models.IntegerField(
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+    # id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, unique=True)
 
 
 class Category(models.TextChoices):
