@@ -39,9 +39,8 @@ class CreateOrderSerializer(serializers.Serializer):
                 for cart_item in cart_items
             ]
             OrderItem.objects.bulk_create(order_items)
-            # Cart.objects.filter(id=cart_id).delete()
-            # [OrderItem.objects.filter(order_id=order_item.id).delete() for order_item in order_items]
-            # [
-            #     CartItems.objects.filter(cart_id=cart_id).delete()
-            #     for cart_item in cart_items
-            # ]
+
+            [
+                CartItems.objects.filter(cart_id=cart_id).delete()
+                for cart_item in cart_items
+            ]
