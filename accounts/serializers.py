@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, DoctorProfile, PatientProfile
+from pharmacy.models import Cart
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -42,9 +43,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = User.objects.create_user(**validated_data)
-        # validated_data.pop("password")
-        # validated_data.pop("role")
-        # PatientProfile.objects.create(user=user, **validated_data)
+        cart = Cart.objects.create(user=user)
         return user
 
 

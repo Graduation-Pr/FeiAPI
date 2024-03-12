@@ -18,11 +18,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import (
-    CreateModelMixin,
-    RetrieveModelMixin,
-    DestroyModelMixin,
-)
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 
 
 @api_view(["GET"])
@@ -45,12 +41,15 @@ class DetailProduct(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 
 
-class CartViewSet(
-    CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet
-):
+class CartViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Cart.objects.all()
+    # queryset = Cart.objects.all()
     serializer_class = CartSerializer
+
+    def get_queryset(self):
+        # Retrieve the cart associated with the authenticated user
+        user = self.request.user
+        return Cart.objects.filter(user=user)
 
 
 class CartItemsViewSet(ModelViewSet):

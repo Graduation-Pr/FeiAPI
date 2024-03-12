@@ -3,8 +3,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
-from PIL import Image
-
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -78,3 +76,4 @@ def create_profile(sender, instance, created, **kwargs):
             PatientProfile.objects.create(user=instance)
         elif instance.role == User.Role.DOCTOR:
             DoctorProfile.objects.create(user=instance)
+
