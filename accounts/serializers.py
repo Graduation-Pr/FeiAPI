@@ -107,6 +107,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "bio",
             "verified",
             "rating",
+            "experience",
         )
 
 
