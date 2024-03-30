@@ -73,46 +73,66 @@ Stage4: HomePage
     -user_profile
 
 Stage5: Bookings
-    -book function 
-    -user=> doctor relationship
-    -state
-    -cancel[reason, description, reschedual] - confirm
-    -comment - plan
-    -patients in doctor app 
-Stage6: Chats
-
-
-Stage7: Plans
-    #CRUDS
+    Doctor-Booking:
+        -book function 
+        -date, time
+        -duration => message, voice
+        -package => message, voice ,inperson
+        -order
+        -user => doctor relationship
+        -state[C, P, F]
+        -cancel[reason, reschedual] - confirm
+        -comment
+        -patients in doctor app(get the number of patients through the number of doctor bookings) 
     
-    #Medcines
-        -dose
-        -image
-
-
-Stage8: Doctor's Home
-    # Plans
-
-    #Lab_results
-
-    -reviews
-    # bookings
-    # chats
-    # patients
-
-
-Stage9: patient_book
-    -name
-    -problem
-    -pay_state
-    -amount
-    -medical_history
-
-Stage11: Payment
+    Lab-Booking:
+        -book function
+        - date, time 
+        -user => lab relationship
+        -package[]
+        -state[C, P, F]
+        -cancel[reason, reschedual]
+        -patients in labs app(get the number of patients through the number of lab bookings)
 
 
 
-Stage12: AI integration
+Stage6: Plans
+    Doctor:
+        #CRUDS
+        -patient
+            -medicines(CRUDS)
+        
+        #Medcines
+            -name
+            -dose 
+            -bill-dosage
+            -program
+            -bill taken[view only]
+
+    Patients:
+        #Medcines
+        -name
+        -dose 
+        -bill-dosage
+        -program
+        -bill taken[view only, take]
 
 
-Stage13: DB-filling
+Stage7: Chats
+
+
+Stage8: Patients App
+    -list doctor-related patients
+    - review doctor
+
+
+Stage10: Payment
+    -pharmacy payment(done)
+    -labs payment
+    -doctor-payment
+
+
+Stage11: AI integration
+
+
+Stage12: DB-filling
