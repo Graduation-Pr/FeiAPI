@@ -4,10 +4,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
-from .serializers import DoctorListSerializer
+from .serializers import DoctorListSerializer, DoctorReadBookingSerializer
 from rest_framework.response import Response
 from rest_framework import generics
 from accounts.serializers import DoctorProfileSerializer
+from .models import DoctorBooking
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
@@ -24,8 +25,21 @@ def get_all_docs(request):
     serializer = DoctorListSerializer(queryset, many=True)
     return paginator.get_paginated_response(serializer.data)
 
+@api_view(["GET"])
+def doctor_detail(request,pk):
+    queryset = DoctorProfile.objects.get(id=pk)
+    serializer = DoctorProfileSerializer(queryset)
+    return Response(serializer.data)
 
-class DoctorDetail(generics.RetrieveAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    queryset = DoctorProfile.objects.all()
-    serializer_class = DoctorProfileSerializer
+# class DoctorDetail(generics.RetrieveAPIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#     queryset = DoctorProfile.objects.all()
+#     serializer_class = DoctorProfileSerializer
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_all_booking(request):
+    queryset = DoctorBooking.objects.filter(doctor=request.user.doctor_profile)
+    serializer = DoctorReadBookingSerializer(queryset, many=True) 
+    return Response(serializer.data)
