@@ -27,6 +27,18 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             return data
         else:
             raise serializers.ValidationError("Incorrect password.")
+        
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["username"] = user.username
+        token["email"] = user.email
+        token["first_name"] = user.first_name
+        token["last_name"] = user.last_name
+        token["role"] = user.role
+
+        return token
 
 
 from rest_framework import serializers
