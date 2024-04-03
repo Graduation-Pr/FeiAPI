@@ -2,22 +2,35 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, DoctorProfile, PatientProfile
 from pharmacy.models import Cart
+from django.contrib.auth import authenticate
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+    def validate(self, attrs):
+        username = attrs.get(self.username_field)
+        password = attrs.get("password")
 
-        # Add custom claims
-        token["username"] = user.username
-        token["email"] = user.email
-        token["first_name"] = user.first_name
-        token["last_name"] = user.last_name
-        token["role"] = user.role
-        # token["full_name"] = user.full_name
+        # Check if the username exists
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("This username is not registered.")
 
-        return token
+        # Authenticate the user
+        if user and authenticate(username=username, password=password):
+            data = super().validate(attrs)
+            data["username"] = user.username
+            data["email"] = user.email
+            data["first_name"] = user.first_name
+            data["last_name"] = user.last_name
+            data["role"] = user.role
+            return data
+        else:
+            raise serializers.ValidationError("Incorrect password.")
+
+
+from rest_framework import serializers
+from .models import User
 
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
@@ -38,6 +51,13 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "role",
         ]
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "This email address is already registered."
+            )
+        return value
+
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match.")
@@ -55,7 +75,6 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     role = serializers.CharField(read_only=True, default=User.Role.DOCTOR)
-    # full_name = serializers.CharField(max_length=255)
 
     class Meta:
         model = User
@@ -69,6 +88,13 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
             "role",
         ]
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "This email address is already registered."
+            )
+        return value
+
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match.")
@@ -77,9 +103,6 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = User.objects.create_user(**validated_data)
-        # validated_data.pop("password")
-        # validated_data.pop("role")
-        # DoctorProfile.objects.create(user=user, **validated_data)
         return user
 
 
@@ -98,6 +121,28 @@ class UserSerializer(serializers.ModelSerializer):
             "gender",
             "role",
         )
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(
+        required=False
+    )  # Allow phone number to be optional
+
+    class Meta:
+        model = User
+        fields = [
+            "password",
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",  # Include phone_number field in the serializer
+            "role",
+        ]
+
+    def validate_phone_number(self, value):
+        if value and len(value) != 10:
+            raise serializers.ValidationError("Phone number must be 10 digits.")
+        return value
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
@@ -123,3 +168,13 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             "user",
             "birth_date",
         )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Format birth_date as day-month-year
+        if instance.birth_date:
+            formatted_date = instance.birth_date.strftime("%d-%m-%Y")
+        else:
+            formatted_date = None
+        data['birth_date'] = formatted_date
+        return data

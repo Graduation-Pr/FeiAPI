@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
@@ -12,6 +13,7 @@ class User(AbstractUser):
 
     role = models.CharField(choices=Role.choices, max_length=10, default=Role.PATIENT)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
+    email = models.EmailField(unique=True)
     image = models.ImageField(
         null=True, blank=True, upload_to="profile_pics", default="user-avatar.png"
     )
@@ -77,4 +79,3 @@ def create_profile(sender, instance, created, **kwargs):
             PatientProfile.objects.create(user=instance)
         elif instance.role == User.Role.DOCTOR:
             DoctorProfile.objects.create(user=instance)
-

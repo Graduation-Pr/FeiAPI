@@ -4,6 +4,7 @@ from .serializers import (
     RegisterDoctorSerializer,
     RegisterPatientSerializer,
     UserSerializer,
+    UpdateUserSerializer,
     DoctorProfileSerializer,
     PatientProfileSerializer,
 )
@@ -52,7 +53,7 @@ def update_user(request):
         password = make_password(request.data.get("password"))
         user.set_password(password)
 
-    user_serializer = UserSerializer(instance=user, data=request.data, partial=True)
+    user_serializer = UpdateUserSerializer(instance=user, data=request.data, partial=True)
     if user_serializer.is_valid():
         user_serializer.save()
     else:
@@ -85,7 +86,6 @@ def update_user(request):
         return Response(
             {"Error": profile_serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
-
 
 def get_current_host(request):
     protocol = request.is_secure() and "https" or "http"

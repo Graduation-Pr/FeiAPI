@@ -1,9 +1,12 @@
-from django.contrib import admin
 from .models import User, DoctorProfile, PatientProfile
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-# Register your models here.
+
+class CustomUserAdmin(UserAdmin):
+    list_display = ("username", "email", "role")
 
 
-admin.site.register(User)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(DoctorProfile)
 admin.site.register(PatientProfile)
