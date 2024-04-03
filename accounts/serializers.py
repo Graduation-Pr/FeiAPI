@@ -27,7 +27,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             return data
         else:
             raise serializers.ValidationError("Incorrect password.")
-        
 
     @classmethod
     def get_token(cls, user):
@@ -188,5 +187,5 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             formatted_date = instance.birth_date.strftime("%d-%m-%Y")
         else:
             formatted_date = None
-        data['birth_date'] = formatted_date
+        data["birth_date"] = formatted_date
         return data

@@ -63,8 +63,6 @@ class Product(models.Model):
         return self.name
 
 
-
-
 class Cart(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)

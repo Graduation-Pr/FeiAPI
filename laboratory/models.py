@@ -22,4 +22,3 @@ class Laboratory(models.Model):
     technology = models.CharField(max_length=50)
     about = models.TextField()
     patient = models.PositiveIntegerField()
-    

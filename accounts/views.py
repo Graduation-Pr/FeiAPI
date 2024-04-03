@@ -53,7 +53,9 @@ def update_user(request):
         password = make_password(request.data.get("password"))
         user.set_password(password)
 
-    user_serializer = UpdateUserSerializer(instance=user, data=request.data, partial=True)
+    user_serializer = UpdateUserSerializer(
+        instance=user, data=request.data, partial=True
+    )
     if user_serializer.is_valid():
         user_serializer.save()
     else:
@@ -87,6 +89,7 @@ def update_user(request):
             {"Error": profile_serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
 
+
 def get_current_host(request):
     protocol = request.is_secure() and "https" or "http"
     host = request.get_host()
@@ -111,7 +114,11 @@ def forget_password(request):
     # send_mail("Paswword reset from Fie", body, "feiapi.grad@gamil.com", [data["email"]])
 
     return Response(
-        {"details": "Password reset sent to {email}  , your password reset link is {link}".format(email=data["email"],link=link)}
+        {
+            "details": "Password reset sent to {email}  , your password reset link is {link}".format(
+                email=data["email"], link=link
+            )
+        }
     )
 
 

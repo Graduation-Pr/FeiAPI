@@ -28,7 +28,3 @@ class DetailLaboratory(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Laboratory.objects.all()
     serializer_class = LaboratorySerializer
-
-
-
-

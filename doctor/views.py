@@ -10,6 +10,7 @@ from rest_framework import generics
 from accounts.serializers import DoctorProfileSerializer
 from .models import DoctorBooking
 
+
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def get_all_docs(request):
@@ -25,11 +26,13 @@ def get_all_docs(request):
     serializer = DoctorListSerializer(queryset, many=True)
     return paginator.get_paginated_response(serializer.data)
 
+
 @api_view(["GET"])
-def doctor_detail(request,pk):
+def doctor_detail(request, pk):
     queryset = DoctorProfile.objects.get(id=pk)
     serializer = DoctorProfileSerializer(queryset)
     return Response(serializer.data)
+
 
 # class DoctorDetail(generics.RetrieveAPIView):
 #     permission_classes = (permissions.IsAuthenticated,)
@@ -41,5 +44,5 @@ def doctor_detail(request,pk):
 @permission_classes([permissions.IsAuthenticated])
 def get_all_booking(request):
     queryset = DoctorBooking.objects.filter(doctor=request.user.doctor_profile)
-    serializer = DoctorReadBookingSerializer(queryset, many=True) 
+    serializer = DoctorReadBookingSerializer(queryset, many=True)
     return Response(serializer.data)

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pharmacy", "0009_alter_pharmacy_image_alter_product_image"),
     ]

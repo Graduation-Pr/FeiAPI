@@ -7,7 +7,7 @@ PACKAGES = (
     ("Messaging", "Messaging"),
     ("Voice call", "Voice call"),
     ("In person", "In person"),
-    )
+)
 
 
 class DoctorBooking(models.Model):
@@ -18,7 +18,6 @@ class DoctorBooking(models.Model):
     booking_hour = models.DateTimeField()
     time_ordered = models.DateTimeField(default=datetime.now)
     duration = models.CharField(max_length=10)
-    
-    
+
     def __str__(self):
         return f"{self.patient}'s booking with Dr {self.doctor}"

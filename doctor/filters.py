@@ -9,4 +9,4 @@ class DoctorFilter(filters.FilterSet):
 
     class Meta:
         model = DoctorProfile
-        fields = ['name', 'min_rating', 'max_rating']
+        fields = ["name", "min_rating", "max_rating"]

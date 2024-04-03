@@ -5,9 +5,9 @@ from .models import Laboratory
 class LaboratorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Laboratory
-        fields = ("name","image","rate","city")
-        
-        
+        fields = ("name", "image", "rate", "city")
+
+
 class LaboratoryDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Laboratory

@@ -35,7 +35,7 @@ def initiate_payment(amount, email, order_id):
 
     try:
         response = requests.post(url=url, headers=headers, json=data)
-        response_data = response.json()  
+        response_data = response.json()
         return Response(response_data)
 
     except requests.exceptions.RequestException as err:
@@ -44,7 +44,7 @@ def initiate_payment(amount, email, order_id):
 
 
 class OrderViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]  
+    permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
     @action(detail=True, methods=["POST"])
@@ -55,7 +55,7 @@ class OrderViewSet(ModelViewSet):
         order_id = order.id
         return initiate_payment(amount, email, order_id)
 
-    @action(detail=False, methods=["POST","GET"])
+    @action(detail=False, methods=["POST", "GET"])
     def confirm_payment(self, request):
         order_id = request.GET.get("order_id")
         order = Order.objects.get(id=order_id)

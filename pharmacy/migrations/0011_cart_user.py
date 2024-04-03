@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pharmacy", "0010_alter_pharmacy_image"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

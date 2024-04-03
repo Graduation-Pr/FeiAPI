@@ -1,8 +1,15 @@
 from rest_framework import serializers
-from accounts.models import (
-    DoctorProfile,
-)  # Adjust the import path according to your project structure
+from accounts.models import DoctorProfile, User
 from .models import DoctorBooking
+
+
+class PatientBookingSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source="user.first_name")
+    last_name = serializers.CharField(source="user.last_name")
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name"]
+
 
 class DoctorListSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
@@ -16,9 +23,17 @@ class DoctorListSerializer(serializers.ModelSerializer):
         model = DoctorProfile
         fields = ("first_name", "last_name", "government", "rating", "city")
 
+
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
-    patient = serializers.CharField(read_only=True)
+    # patient = serializers.CharField(read_only=True)
+    patient = PatientBookingSerializer()
     class Meta:
         model = DoctorBooking
-        fields = ("patient","service", "booking_day", "booking_hour", "time_ordered", "duration")
-        
+        fields = (
+            "patient",
+            "service",
+            "booking_day",
+            "booking_hour",
+            "time_ordered",
+            "duration",
+        )
