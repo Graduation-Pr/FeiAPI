@@ -15,11 +15,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = ["id", "placed_at", "pending_status", "owner", "items"]
 
+
+    def get_owner(self, obj):
+        return obj.owner.username
 
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()

@@ -13,6 +13,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "stock",
             "image",
+            "is_fav",
         )
 
 

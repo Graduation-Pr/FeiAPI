@@ -32,7 +32,7 @@ def get_all_products(request):
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
     serializer = ProductSerializer(queryset, many=True)
-    return Response({"product": serializer.data})
+    return paginator.get_paginated_response({"product": serializer.data})
 
 
 class DetailProduct(generics.RetrieveAPIView):

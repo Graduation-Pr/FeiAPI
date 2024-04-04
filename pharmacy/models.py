@@ -58,6 +58,7 @@ class Product(models.Model):
         max_length=40, choices=Subcategory.choices, null=True, blank=True
     )
     stock = models.IntegerField(default=0)
+    is_fav = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
