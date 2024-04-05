@@ -131,10 +131,12 @@ class UserSerializer(serializers.ModelSerializer):
             "image",
             "gender",
             "role",
+            "birth_date"
         )
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(read_only=True)
     phone_number = serializers.CharField(
         required=False
     )  # Allow phone number to be optional
@@ -148,7 +150,23 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             "last_name",
             "phone_number",  # Include phone_number field in the serializer
             "role",
+            "birth_date",
+            "gender",
+            "city",
+            "government",
+
         ]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Format birth_date as day-month-year
+        if instance.birth_date:
+            formatted_date = instance.birth_date.strftime("%d-%m-%Y")
+        else:
+            formatted_date = None
+        data["birth_date"] = formatted_date
+        return data
+
 
     def validate_phone_number(self, value):
         if value and len(value) != 10:
@@ -177,15 +195,5 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         model = PatientProfile
         fields = (
             "user",
-            "birth_date",
+            # "birth_date",
         )
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        # Format birth_date as day-month-year
-        if instance.birth_date:
-            formatted_date = instance.birth_date.strftime("%d-%m-%Y")
-        else:
-            formatted_date = None
-        data["birth_date"] = formatted_date
-        return data
