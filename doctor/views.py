@@ -34,11 +34,6 @@ def doctor_detail(request, pk):
     return Response(serializer.data)
 
 
-# class DoctorDetail(generics.RetrieveAPIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#     queryset = DoctorProfile.objects.all()
-#     serializer_class = DoctorProfileSerializer
-
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])

@@ -21,8 +21,6 @@ class DoctorWriteBookingChatAndVoiceSerializer(serializers.ModelSerializer):
             "service",
             "booking_day",
             "booking_hour",
-            "time_ordered",
-            "duration",
             "doctor"
         )
 
@@ -37,8 +35,7 @@ class DoctorWriteBookingChatAndVoiceSerializer(serializers.ModelSerializer):
 class DoctorWriteBookingInPersonSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
     id = serializers.CharField(read_only=True)
-    duration = serializers.CharField(read_only=True)
-
+    
     class Meta:
         model = DoctorBooking
         fields = (
@@ -46,8 +43,6 @@ class DoctorWriteBookingInPersonSerializer(serializers.ModelSerializer):
             "service",
             "booking_day",
             "booking_hour",
-            "time_ordered",
-            "duration",
             "doctor",
         )
 
@@ -56,5 +51,4 @@ class DoctorWriteBookingInPersonSerializer(serializers.ModelSerializer):
         doctor_id = self.context["doctor_id"]
         validated_data["doctor_id"] = doctor_id
         validated_data["patient_id"] = user_id
-        validated_data['duration']= '__NA__'
         return super().create(validated_data)

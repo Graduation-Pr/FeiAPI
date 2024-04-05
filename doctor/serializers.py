@@ -34,6 +34,4 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
             "service",
             "booking_day",
             "booking_hour",
-            "time_ordered",
-            "duration",
         )
