@@ -32,6 +32,5 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
         fields = (
             "patient",
             "service",
-            "booking_day",
-            "booking_hour",
+            "booking_date",
         )

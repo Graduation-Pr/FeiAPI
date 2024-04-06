@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.db import models
-from accounts.models import PatientProfile, DoctorProfile
+from accounts.models import User
 
 
 SERVICES = (
@@ -18,13 +18,12 @@ class Service(models.Model):
 
 
 class DoctorBooking(models.Model):
-    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(DoctorProfile, on_delete=models.CASCADE)
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patient')
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctor')
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    booking_day = models.DateField()
-    booking_hour = models.DateTimeField()
+    booking_date = models.DateTimeField()
     
 
     def __str__(self):
-        return f"{self.patient.user.username}'s booking with Dr {self.doctor.user.username}"
+        return f"{self.patient.username}'s booking with Dr {self.doctor.username}"
 
