@@ -38,6 +38,6 @@ def doctor_detail(request, pk):
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def get_all_booking(request):
-    queryset = DoctorBooking.objects.filter(doctor=request.user.doctor_profile)
+    queryset = DoctorBooking.objects.filter(doctor=request.user)
     serializer = DoctorReadBookingSerializer(queryset, many=True)
     return Response(serializer.data)
