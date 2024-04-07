@@ -113,13 +113,7 @@ def forget_password(request):
     body = "Your password reset link is : {link}".format(link=link)
     # send_mail("Paswword reset from Fie", body, "feiapi.grad@gamil.com", [data["email"]])
 
-    return Response(
-        {
-            "details": "Password reset sent to {email}  , your password reset link is {link}".format(
-                email=data["email"], link=link
-            )
-        }
-    )
+    return Response({"details":link})
 
 
 @api_view(["POST"])

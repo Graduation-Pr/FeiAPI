@@ -84,6 +84,7 @@ Stage5: Bookings
         -cancel[reason, reschedual] - confirm
         -comment
         -patients in doctor app(get the number of patients through the number of doctor bookings) 
+        -list user bookings
     
     Lab-Booking:
         -book function
