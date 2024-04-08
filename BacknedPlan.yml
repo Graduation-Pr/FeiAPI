@@ -76,15 +76,14 @@ Stage5: Bookings
     Doctor-Booking:
         -book function 
         -date, time
-        -duration => message, voice
-        -package => message, voice ,inperson
-        -order
+        -package 
+        -list user bookings
         -user => doctor relationship
+        -order
         -state[C, P, F]
-        -cancel[reason, reschedual] - confirm
+        -cancel[reason, reschedual]
         -comment
         -patients in doctor app(get the number of patients through the number of doctor bookings) 
-        -list user bookings
     
     Lab-Booking:
         -book function
@@ -95,7 +94,13 @@ Stage5: Bookings
         -cancel[reason, reschedual]
         -patients in labs app(get the number of patients through the number of lab bookings)
 
-
+Stage6: Medical Profile
+    patient:
+        -doctor comment
+        -lab result
+        -prescriptions
+        -tests
+        
 
 Stage6: Plans
     Doctor:

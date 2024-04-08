@@ -3,9 +3,6 @@ from accounts.models import DoctorProfile, User
 from .models import DoctorBooking
 
 
-
-
-
 class DoctorListSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
@@ -17,14 +14,6 @@ class DoctorListSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoctorProfile
         fields = ("first_name", "last_name", "government", "rating", "city")
-
-
-# class PatientBookingSerializer(serializers.ModelSerializer):
-#     first_name = serializers.CharField(source="user.first_name")
-#     last_name = serializers.CharField(source="user.last_name")
-#     class Meta:
-#         model = User
-#         fields = ["first_name", "last_name"]
 
 
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
