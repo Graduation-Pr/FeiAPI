@@ -109,11 +109,11 @@ def forget_password(request):
 
     host = get_current_host(request)
     # print(host)
-    link = "{host}/accounts/reset_password/{token}/".format(token=token, host=host)
-    body = "Your password reset link is : {link}".format(link=link)
+    # link = "{host}/accounts/reset_password/{token}/".format(token=token, host=host)
+    # body = "Your password reset link is : {link}".format(link=link)
     # send_mail("Paswword reset from Fie", body, "feiapi.grad@gamil.com", [data["email"]])
 
-    return Response({"details":link})
+    return Response({"details":token})
 
 
 @api_view(["POST"])
