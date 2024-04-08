@@ -82,6 +82,7 @@ Stage5: Bookings
         -order
         -state[C, P, F]
         -cancel[reason, reschedual]
+        -filter status
         -comment
         -patients in doctor app(get the number of patients through the number of doctor bookings) 
     
@@ -92,6 +93,7 @@ Stage5: Bookings
         -package[]
         -state[C, P, F]
         -cancel[reason, reschedual]
+        -filter status
         -patients in labs app(get the number of patients through the number of lab bookings)
 
 Stage6: Medical Profile

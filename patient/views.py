@@ -25,10 +25,6 @@ class DoctorBookingViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             booking_instance = serializer.save()
 
-            # Simulate Payment Process
-            # Here, you can create a dummy payment status or implement custom logic for payment
-
-            # Retrieve credit card details from request data
             credit_card_data = request.data.get('payment_card', None)
             if credit_card_data:
                 credit_card_serializer = CreditCardSerializer(data=credit_card_data)

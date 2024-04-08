@@ -29,4 +29,17 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
             "patient",
             "service",
             "booking_date",
+            "pending_status",
         )
+        
+class DoctorBookingCancelSerializer(serializers.ModelSerializer):
+    booking = DoctorReadBookingSerializer(read_only=True)
+    class Meta:
+        model = DoctorBooking
+        fields = (
+            "booking",
+            "is_cancelled",
+        )
+
+
+
