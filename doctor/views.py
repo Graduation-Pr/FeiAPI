@@ -47,10 +47,12 @@ def get_all_booking(request):
 @permission_classes([permissions.IsAuthenticated])
 def cancel_booking(request, pk):
     user = request.user
+    data = request.data
     try:
         booking = DoctorBooking.objects.get(id=pk)
         if booking.doctor == user or booking.patient == user:
             booking.is_cancelled = True
+            booking.cancel_reason = data["cancel_reason"]
             booking.save()
             serializer = DoctorBookingCancelSerializer(booking)
             return Response(serializer.data)

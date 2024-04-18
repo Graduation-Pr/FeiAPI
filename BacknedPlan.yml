@@ -80,10 +80,7 @@ Stage5: Bookings
         -list user bookings
         -user => doctor relationship
         -order
-        -state[C, P, F]
         -cancel[reason, reschedual]
-        -filter status
-        -comment
         -patients in doctor app(get the number of patients through the number of doctor bookings) 
     
     Lab-Booking:
@@ -91,9 +88,7 @@ Stage5: Bookings
         - date, time 
         -user => lab relationship
         -package[]
-        -state[C, P, F]
         -cancel[reason, reschedual]
-        -filter status
         -patients in labs app(get the number of patients through the number of lab bookings)
 
 Stage6: Medical Profile
@@ -102,6 +97,7 @@ Stage6: Medical Profile
         -lab result
         -prescriptions
         -tests
+        -comment
         
 
 Stage6: Plans

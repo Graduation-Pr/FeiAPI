@@ -34,11 +34,13 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
         
 class DoctorBookingCancelSerializer(serializers.ModelSerializer):
     booking = DoctorReadBookingSerializer(read_only=True)
+    cancel_reason = serializers.CharField(required=True)
     class Meta:
         model = DoctorBooking
         fields = (
             "booking",
             "is_cancelled",
+            "cancel_reason",
         )
 
 
