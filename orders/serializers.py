@@ -1,8 +1,16 @@
 from rest_framework import serializers
-from .models import Order, OrderItem
+from .models import Order, OrderItem, CreditCard
 from pharmacy.serializers import SimpleProductSerializer
-from pharmacy.models import CartItems, Cart
+from pharmacy.models import CartItems
 from django.db import transaction
+from accounts.models import User
+
+
+class CreditCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CreditCard
+        fields = ("id", "card_number", "expiration_date", "cvv")
+
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -21,9 +29,9 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ["id", "placed_at", "pending_status", "owner", "items"]
 
-
     def get_owner(self, obj):
         return obj.owner.username
+
 
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()

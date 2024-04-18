@@ -1,14 +1,12 @@
-from django.shortcuts import render
-from .serializers import DoctorWriteBookingSerializer, BookingOrderSerializer, CreditCardSerializer
-from rest_framework.decorators import api_view, permission_classes
+from .serializers import DoctorWriteBookingSerializer, BookingOrderSerializer
+from orders.serializers import CreditCardSerializer
 from rest_framework.response import Response
 from accounts.models import User
-from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework import status
-from doctor.models import DoctorBooking, CreditCard
+from doctor.models import DoctorBooking
 
 class DoctorBookingViewSet(ModelViewSet):
     queryset = DoctorBooking.objects.all()
@@ -48,3 +46,6 @@ class DoctorBookingViewSet(ModelViewSet):
             {"error": "Invalid Doctor ID", "message": "Please provide a valid Doctor ID."},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+

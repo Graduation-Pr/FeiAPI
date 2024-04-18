@@ -2,7 +2,7 @@ from datetime import datetime
 from django.db import models
 from accounts.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator
-
+from orders.models import CreditCard
 
 # CANCEL_REASON = (
 #     ("Scedual Change", "Scedual Change"),
@@ -18,22 +18,16 @@ SERVICES = (
     ("Specialist Consultations", "Specialist Consultations"),
     ("follow-up appointment", "follow-up appointment"),
 )
+
+
 class Service(models.Model):
     service = models.CharField(max_length=50, choices=SERVICES)
     price = models.PositiveBigIntegerField()
-    
+
     def __str__(self):
         return f"{self.service}"
 
-class CreditCard(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    card_number = models.CharField(max_length=16, validators=[MinLengthValidator(16), MaxLengthValidator(16)])
-    expiration_date = models.DateField()
-    cvv = models.CharField(max_length=3, validators=[MinLengthValidator(3), MaxLengthValidator(3)])
 
-    def _str_(self):
-        return f"Credit Card ending in {self.card_number[-4:]}"
-    
 class DoctorBooking(models.Model):
     PAYMENT_STATUS_PENDING = "P"
     PAYMENT_STATUS_COMPLETE = "C"
@@ -47,8 +41,8 @@ class DoctorBooking(models.Model):
     pending_status = models.CharField(
         max_length=50, choices=PAYMENT_STATUS_CHOICES, default="PAYMENT_STATUS_PENDING"
     )
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patient')
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctor')
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient")
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     booking_date = models.DateTimeField()
     is_cancelled = models.BooleanField(default=False)

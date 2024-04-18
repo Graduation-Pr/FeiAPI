@@ -6,7 +6,7 @@ from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import DoctorListSerializer, DoctorReadBookingSerializer, DoctorBookingCancelSerializer
 from rest_framework.response import Response
-from rest_framework import generics, status
+from rest_framework import  status
 from accounts.serializers import DoctorProfileSerializer
 from .models import DoctorBooking
 
@@ -49,7 +49,7 @@ def cancel_booking(request, pk):
     user = request.user
     try:
         booking = DoctorBooking.objects.get(id=pk)
-        if booking.doctor == user:
+        if booking.doctor == user or booking.patient == user:
             booking.is_cancelled = True
             booking.save()
             serializer = DoctorBookingCancelSerializer(booking)
@@ -61,6 +61,8 @@ def cancel_booking(request, pk):
         return Response({"errors": "Booking does not exist."},
                         status=status.HTTP_404_NOT_FOUND)
         
+
+
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def booking_detail(request,pk):

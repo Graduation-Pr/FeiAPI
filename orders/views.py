@@ -1,14 +1,19 @@
 import uuid
-from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderItemSerializer, CreateOrderSerializer
+from .models import Order, OrderItem, CreditCard
+from .serializers import (
+    CreditCardSerializer,
+    OrderSerializer,
+    OrderItemSerializer,
+    CreateOrderSerializer,
+)
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 import requests
 from django.conf import settings
 from rest_framework.response import Response
-
-import json  # Add this import at the top of your file
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
 
 
 def initiate_payment(amount, email, order_id):
@@ -85,3 +90,49 @@ class OrderItemViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def list_credit_card(request):
+    if request.method == "GET":
+        user = request.user
+        credit_cards = CreditCard.objects.filter(user=user)
+        serializer = CreditCardSerializer(credit_cards, many=True)
+        return Response(serializer.data)
+
+
+@api_view(["GET", "DELETE"])
+@permission_classes([IsAuthenticated])
+def credit_card_detail(request, pk):
+    user = request.user
+    
+    try:
+        credit_card = CreditCard.objects.get(pk=pk)
+    except CreditCard.DoesNotExist:
+        return Response({"message":"card not found"},status=status.HTTP_404_NOT_FOUND)
+
+    if credit_card.user == request.user:
+        if request.method == "GET":
+            serializer = CreditCardSerializer(credit_card)
+            return Response(serializer.data)
+
+        elif request.method == "DELETE":
+            credit_card.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(
+        {"errors": "this card isn't owned by this user"},
+        status=status.HTTP_401_UNAUTHORIZED,
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def credit_card_create(request):
+    user = request.user
+    if request.method == "POST":
+        serializer = CreditCardSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user)
+            return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors)
