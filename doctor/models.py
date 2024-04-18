@@ -29,18 +29,6 @@ class Service(models.Model):
 
 
 class DoctorBooking(models.Model):
-    PAYMENT_STATUS_PENDING = "P"
-    PAYMENT_STATUS_COMPLETE = "C"
-    PAYMENT_STATUS_FAILED = "F"
-
-    PAYMENT_STATUS_CHOICES = [
-        (PAYMENT_STATUS_PENDING, "Pending"),
-        (PAYMENT_STATUS_COMPLETE, "Complete"),
-        (PAYMENT_STATUS_FAILED, "Failed"),
-    ]
-    pending_status = models.CharField(
-        max_length=50, choices=PAYMENT_STATUS_CHOICES, default="PAYMENT_STATUS_PENDING"
-    )
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient")
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)

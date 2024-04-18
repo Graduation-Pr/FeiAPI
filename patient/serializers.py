@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from doctor.models import DoctorBooking
 from orders.serializers import CreditCardSerializer
+from orders.models import CreditCard
 
 class DoctorWriteBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
@@ -29,7 +30,9 @@ class BookingOrderSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
     service = serializers.CharField(read_only=True)
-    payment_card = CreditCardSerializer(required=False)
+    payment_card = CreditCardSerializer(read_only=True)
+    # payment_card = serializers.SerializerMethodField()
+    # card_id = serializers.CharField()
 
     class Meta:
         model = DoctorBooking
@@ -41,4 +44,11 @@ class BookingOrderSerializer(serializers.ModelSerializer):
             "service",
             "booking_date",
             "payment_card",
+            # "card_id",
         ]
+        
+    # def get_payment_card(self, card_id):
+    #     card = CreditCard.objects.get(id=card_id)
+    #     self.validated_data["payment_card"] = card
+
+
