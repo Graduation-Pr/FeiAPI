@@ -38,7 +38,6 @@ class BookingOrderSerializer(serializers.ModelSerializer):
         model = DoctorBooking
         fields = [
             "id",
-            "pending_status",
             "doctor",
             "patient",
             "service",

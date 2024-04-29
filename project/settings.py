@@ -170,11 +170,19 @@ REST_FRAMEWORK = {
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Your Project API",
-    "DESCRIPTION": "Your project description",
+    "TITLE": "FeiAPI - Pulmonary Embolism Diagnoses",
+    "DESCRIPTION": """FeiAPI is a comprehensive platform designed to assist in the
+                    diagnoses, tracking, and monitoring of pulmonary embolism (PE).
+                    With its advanced algorithms and intuitive interface,
+                    FeiAPI empowers healthcare professionals to efficiently assess and 
+                    manage patients with PE, from initial diagnosis to ongoing monitoring.
+                    By integrating cutting-edge technology with clinical expertise,
+                    FeiAPI streamlines the process of identifying and treating PE,
+                    ultimately improving patient outcomes and reducing the burden on healthcare systems.""",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
 }
+
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
