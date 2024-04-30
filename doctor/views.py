@@ -34,10 +34,15 @@ def get_all_docs(request):
 
 @api_view(["GET"])
 def doctor_detail(request, pk):
-    queryset = DoctorProfile.objects.get(id=pk)
-    serializer = DoctorProfileSerializer(queryset)
-    return Response(serializer.data)
+    doctor = User.objects.get(id=pk)
+    if doctor.role == "DOCTOR":
+        doctor_profile = DoctorProfile.objects.get(user=doctor)
+        doctor_bookings = DoctorBooking.objects.filter(doctor=doctor).count()
+        doctor_profile.doctor_patients = doctor_bookings
+        doctor_profile.save()
 
+        serializer = DoctorProfileSerializer(doctor_profile)
+        return Response(serializer.data)
 
 
 @api_view(["GET"])
@@ -50,6 +55,7 @@ def get_all_booking(request):
     serializer = DoctorReadBookingSerializer(queryset, many=True)
     return Response(serializer.data)
 
+
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def cancel_booking(request, pk):
@@ -57,7 +63,7 @@ def cancel_booking(request, pk):
     data = request.data
     try:
         booking = DoctorBooking.objects.get(id=pk)
-        if  booking.patient == user:
+        if booking.patient == user:
             booking.is_cancelled = True
             booking.cancel_reason = data["cancel_reason"]
             booking.save()
@@ -116,10 +122,6 @@ def reschedual_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
-    
-
-
-
 
 
 @api_view(["PUT"])
@@ -143,4 +145,3 @@ def complete_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
-

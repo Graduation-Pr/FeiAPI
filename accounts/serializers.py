@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from doctor.models import DoctorBooking
 from .models import User, DoctorProfile, PatientProfile
 from pharmacy.models import Cart
 from django.contrib.auth import authenticate
@@ -176,6 +178,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    # doctor_patients = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorProfile
@@ -185,7 +188,15 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "verified",
             "rating",
             "experience",
+            "doctor_patients"
         )
+
+    # def get_doctor_patients(self):
+    #     doctor_patients = self.context["doctor_patients"]
+    #     return doctor_patients
+
+
+
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):

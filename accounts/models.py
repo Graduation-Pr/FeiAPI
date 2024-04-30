@@ -68,6 +68,7 @@ class DoctorProfile(models.Model):
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     experience = models.PositiveIntegerField(null=True, blank=True)
+    doctor_patients = models.PositiveBigIntegerField()
 
     def __str__(self):
         return f"{self.user.username}'s Doctor Profile"
