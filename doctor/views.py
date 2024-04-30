@@ -4,9 +4,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
-from .serializers import DoctorListSerializer, DoctorReadBookingSerializer, DoctorBookingCancelSerializer
+from .serializers import (
+    DoctorListSerializer,
+    DoctorReadBookingSerializer,
+    DoctorBookingCancelSerializer,
+    DoctorBookingReschdualAndCompleteSerializer,
+)
 from rest_framework.response import Response
-from rest_framework import  status
+from rest_framework import status
 from accounts.serializers import DoctorProfileSerializer
 from .models import DoctorBooking
 
@@ -33,7 +38,6 @@ def doctor_detail(request, pk):
     return Response(serializer.data)
 
 
-
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def get_all_booking(request):
@@ -49,24 +53,26 @@ def cancel_booking(request, pk):
     data = request.data
     try:
         booking = DoctorBooking.objects.get(id=pk)
-        if booking.doctor == user or booking.patient == user:
+        if  booking.patient == user:
             booking.is_cancelled = True
             booking.cancel_reason = data["cancel_reason"]
             booking.save()
             serializer = DoctorBookingCancelSerializer(booking)
             return Response(serializer.data)
         else:
-            return Response({"errors": "You do not have permission to cancel this booking."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"errors": "You do not have permission to cancel this booking."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
     except DoctorBooking.DoesNotExist:
-        return Response({"errors": "Booking does not exist."},
-                        status=status.HTTP_404_NOT_FOUND)
-        
+        return Response(
+            {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
 
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
-def booking_detail(request,pk):
+def booking_detail(request, pk):
     user = request.user
     try:
         booking = DoctorBooking.objects.get(id=pk)
@@ -74,8 +80,63 @@ def booking_detail(request,pk):
             serializer = DoctorReadBookingSerializer(booking)
             return Response(serializer.data)
         else:
-            return Response({"errors": "You do not have permission to view this booking."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"errors": "You do not have permission to view this booking."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
     except DoctorBooking.DoesNotExist:
-        return Response({"errors": "Booking does not exist."},
-                        status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+
+@api_view(["PUT"])
+@permission_classes([permissions.IsAuthenticated])
+def reschedual_booking(request, pk):
+    user = request.user
+    data = request.data
+    new_booking_date = data["booking_date"]
+    try:
+        booking = DoctorBooking.objects.get(id=pk)
+        if booking.doctor == user or booking.patient == user:
+            booking.booking_date = new_booking_date
+            booking.save()
+            serializer = DoctorBookingReschdualAndCompleteSerializer(booking)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"errors": "You do not have permission to reschedual this booking."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+    except DoctorBooking.DoesNotExist:
+        return Response(
+            {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+    
+
+
+
+
+
+@api_view(["PUT"])
+@permission_classes([permissions.IsAuthenticated])
+def complete_booking(request, pk):
+    user = request.user
+    data = request.data
+    try:
+        booking = DoctorBooking.objects.get(id=pk)
+        if booking.doctor == user:
+            booking.is_completed = True
+            booking.save()
+            serializer = DoctorBookingReschdualAndCompleteSerializer(booking)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"errors": "You do not have permission to complete this booking."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+    except DoctorBooking.DoesNotExist:
+        return Response(
+            {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+

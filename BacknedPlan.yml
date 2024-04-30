@@ -12,23 +12,23 @@ Stage1: Auth&Profile
 
 
     #Custome_User_Model(AbstractUser) (done)
-        -User
-        -Docotr
+        - User
+        - Docotr
 
 
     #User(custome_User_Model) (done)
-        -username (login)
-        -email (email)
+        - username (login)
+        - email (email)
 
 
     #Profile: >> signals  (done)
-        -first_name (charfiled)
-        -last_name (charfiled)
-        -birth_date (datetimefiled) --
-        -government [choices]
-        -city [choices]
-        -phone_number [positive-integer-filed]
-        -gender [choices]
+        - first_name (charfiled)
+        - last_name (charfiled)
+        - birth_date (datetimefiled) --
+        - government [choices]
+        - city [choices]
+        - phone_number [positive-integer-filed]
+        - gender [choices]
         
         !Profile_Data_Function   (done)
 
@@ -49,94 +49,101 @@ Stage1: Auth&Profile
 
 Stage2: Pharmacy(done)
     #Creating Pharmacy Model 
-        -attrs
-        -fav
+        - attrs
+        - fav
     # CRUDS
-        -top 3 pharm
-        -fliter(type)
+        - top 3 pharm
+        - fliter(type)
     #Creating Cart Model
-        -add, remove , out of stock 
+        - add, remove , out of stock 
 
 Stage3: Labs(done)
     #creating Labs Model
-        -attrs
+        - attrs
     # CRUDS
-        -top 5 objects
-        -fliter(type)
+        - top 5 objects
+        - fliter(type)
     #set appointment
 
 Stage4: HomePage
-    -list all docs (done)
-    -top 5 docs (done)
-    -top 3 pharms
-    -labs
-    -user_profile
+    - list all docs (done)
+    - top 5 docs (done)
+    - top 3 pharms
+    - labs
+    - user_profile
 
 Stage5: Bookings
     Doctor-Booking:
-        -book function 
-        -date, time
-        -package 
-        -list user bookings
-        -user => doctor relationship
-        -order
-        -cancel[reason, reschedual]
-        -patients in doctor app(get the number of patients through the number of doctor bookings) 
+        - book function 
+        - date, time
+        - package 
+        - list user bookings
+        - user => doctor relationship
+        - cancel[reason, reschedual]
+        - patients in doctor app(get the number of patients through the number of doctor bookings) 
     
     Lab-Booking:
-        -book function
+        - book function
         - date, time 
-        -user => lab relationship
-        -package[]
-        -cancel[reason, reschedual]
-        -patients in labs app(get the number of patients through the number of lab bookings)
+        - user => lab relationship
+        - package[]
+        - cancel[reason, reschedual]
+        - patients in labs app(get the number of patients through the number of lab bookings)
 
 Stage6: Medical Profile
     patient:
-        -doctor comment
-        -lab result
-        -prescriptions
-        -tests
-        -comment
+        - doctor comment
+        - lab result
+        - prescriptions
+        - tests
+        - comment
         
 
 Stage6: Plans
     Doctor:
         #CRUDS
-        -patient
-            -medicines(CRUDS)
+        - patient
+            - medicines(CRUDS)
         
         #Medcines
-            -name
-            -dose 
-            -bill-dosage
-            -program
-            -bill taken[view only]
+            - name
+            - dose 
+            - bill-dosage
+            - program
+            - bill taken[view only]
 
     Patients:
         #Medcines
-        -name
-        -dose 
-        -bill-dosage
-        -program
-        -bill taken[view only, take]
+        - name
+        - dose 
+        - bill-dosage
+        - program
+        - bill taken[view only, take]
 
 
-Stage7: Chats
+Stage7: Patients App
+    - list doctor-related patients
+    - review doctor
 
 
-Stage8: Patients App
-    -list doctor-related patients
-    -review doctor
+Stage9: Payment
+    - pharmacy payment(done)
+    - labs payment
+    - doctor-payment (done)
 
 
-Stage10: Payment
-    -pharmacy payment(done)
-    -labs payment
-    -doctor-payment
-
+Stage10: Chats
 
 Stage11: AI integration
 
+Stage12: Admin Customizing
 
-Stage12: DB-filling
+Stage13: Code Refactoring
+    - define sechma for swagger
+    - write comments
+    - remove dupliactes
+
+Stage14: Dockerzing
+
+
+Stage15: DB-filling

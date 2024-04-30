@@ -27,7 +27,8 @@ class DoctorBooking(models.Model):
     booking_date = models.DateTimeField()
     payment_card = models.ForeignKey(CreditCard, on_delete=models.SET_NULL, blank=True,null=True)
     is_cancelled = models.BooleanField(default=False)
-    cancel_reason = models.CharField(max_length=200)
+    is_completed = models.BooleanField(default=False)
+    cancel_reason = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return f"{self.patient.username}'s booking with Dr {self.doctor.username}"

@@ -46,11 +46,15 @@ class DoctorBookingCancelSerializer(serializers.ModelSerializer):
     cancel_reason = serializers.CharField(required=True)
     class Meta:
         model = DoctorBooking
-        fields = (
-            "booking",
-            "is_cancelled",
-            "cancel_reason",
-        )
+        fields = "__all__"
 
+
+class DoctorBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
+    booking = DoctorReadBookingSerializer(read_only=True)
+    # booking_date = serializers.CharField(required=True)
+
+    class Meta:
+        model = DoctorBooking
+        fields = "__all__"
 
 
