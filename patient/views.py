@@ -1,4 +1,4 @@
-from .serializers import DoctorWriteBookingSerializer, BookingOrderSerializer
+from .serializers import DoctorBookingSerializer
 from orders.serializers import CreditCardSerializer
 from rest_framework.response import Response
 from accounts.models import User
@@ -8,35 +8,41 @@ from rest_framework.decorators import action
 from rest_framework import status
 from doctor.models import DoctorBooking
 from orders.models import CreditCard
+from rest_framework.decorators import api_view, permission_classes
 
 
-class DoctorBookingViewSet(ModelViewSet):
-    queryset = DoctorBooking.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = BookingOrderSerializer
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_doctor_booking(request, doctor_id):
+    doctor = User.objects.get(id=doctor_id)
+    if doctor.role == "DOCTOR":
 
-    @action(detail=True, methods=["POST"])
-    def doctor_booking(self, request, pk):
-        user = User.objects.get(id=pk)
         data = request.data
-        if user.role == "DOCTOR":
-            serializer = DoctorWriteBookingSerializer(
-                data=request.data, context={"user_id": request.user.id, "doctor_id": pk}
-            )
-            card_id = data.get("card_id")
-            try:   
-                card = CreditCard.objects.get(id=card_id)
-            except CreditCard.DoesNotExist:
-                return Response({"error": "Card not found"}, status=status.HTTP_404_NOT_FOUND)
-            
-            if serializer.is_valid():
-                booking_instance = serializer.save(payment_card=card)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print(data)
+        user = request.user
+        payment_card = data["payment_card"]
+        serializer = DoctorBookingSerializer(
+            data=data,
+            context={
+                "patient_id": user.id,
+                "doctor_id": doctor_id,
+                "payment_card": payment_card,
+            },
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
         else:
             return Response(
-                {"error": "Invalid Doctor ID", "message": "Please provide a valid Doctor ID."},
-                status=status.HTTP_400_BAD_REQUEST
+                {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
 
+    else:
+        return Response(
+            {
+                "error": "Invalid Doctor ID",
+                "message": "Please provide a valid Doctor ID.",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )

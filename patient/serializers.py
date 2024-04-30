@@ -1,53 +1,28 @@
 from rest_framework import serializers
 from doctor.models import DoctorBooking
-from orders.serializers import CreditCardSerializer
 from orders.models import CreditCard
 
-class DoctorWriteBookingSerializer(serializers.ModelSerializer):
+
+class DoctorBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
-    id = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
 
     class Meta:
         model = DoctorBooking
-        fields = (
-            "id",
-            "doctor",
-            "patient",
-            "service",
-            "booking_date",
-        )
+        fields = ["id", "doctor", "patient", "booking_date", "service", "payment_card"]
+
 
     def create(self, validated_data):
-        user_id = self.context["user_id"]
+        print("Context in Serializer:", self.context)
+        patient_id = self.context["patient_id"]
         doctor_id = self.context["doctor_id"]
+        payment_card_id = self.context["payment_card"]
+
+        card = CreditCard.objects.get(id=payment_card_id)
+
         validated_data["doctor_id"] = doctor_id
-        validated_data["patient_id"] = user_id
+        validated_data["patient_id"] = patient_id
+        validated_data["payment_card"] = card
         return super().create(validated_data)
-
-
-class BookingOrderSerializer(serializers.ModelSerializer):
-    doctor = serializers.CharField(read_only=True)
-    patient = serializers.CharField(read_only=True)
-    service = serializers.CharField(read_only=True)
-    payment_card = CreditCardSerializer(read_only=True)
-    # payment_card = serializers.SerializerMethodField()
-    # card_id = serializers.CharField()
-
-    class Meta:
-        model = DoctorBooking
-        fields = [
-            "id",
-            "doctor",
-            "patient",
-            "service",
-            "booking_date",
-            "payment_card",
-            # "card_id",
-        ]
-        
-    # def get_payment_card(self, card_id):
-    #     card = CreditCard.objects.get(id=card_id)
-    #     self.validated_data["payment_card"] = card
 
 

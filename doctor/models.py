@@ -4,14 +4,6 @@ from accounts.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from orders.models import CreditCard
 
-# CANCEL_REASON = (
-#     ("Scedual Change", "Scedual Change"),
-#     ("Weather Condition", "Weather Condition"),
-#     ("Unexpected Work", "Unexpected Work"),
-#     ("Childcare Issue", "Childcare Issue"),
-#     ("Tavel Delays", "Tavel Delays"),
-#     ("Other", "Other"),
-# )
 
 SERVICES = (
     ("Standard Appointment", "Standard Appointment"),
@@ -33,9 +25,9 @@ class DoctorBooking(models.Model):
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     booking_date = models.DateTimeField()
+    payment_card = models.ForeignKey(CreditCard, on_delete=models.SET_NULL, blank=True,null=True)
     is_cancelled = models.BooleanField(default=False)
     cancel_reason = models.CharField(max_length=200)
-    payment_card = models.ForeignKey(CreditCard, on_delete=models.SET_NULL, blank=True,null=True)
 
     def __str__(self):
         return f"{self.patient.username}'s booking with Dr {self.doctor.username}"

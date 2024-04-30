@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from accounts.models import DoctorProfile, User
-from .models import DoctorBooking
+from .models import DoctorBooking, Service
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
@@ -8,18 +8,28 @@ class DoctorListSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name")
     government = serializers.CharField(source="user.government")
     city = serializers.CharField(source="user.city")
-
-    # Assuming 'rating' is directly on the DoctorProfile model as per your previous setup
+    image = serializers.CharField(source="user.image")
 
     class Meta:
         model = DoctorProfile
-        fields = ("first_name", "last_name", "government", "rating", "city")
+        fields = ("first_name", "last_name", "government", "rating", "city", "image")
+
+
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = ('service', "price")
+
+
 
 
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
     id = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
+    service = ServiceSerializer()
     
     class Meta:
         model = DoctorBooking

@@ -14,7 +14,6 @@ from .models import DoctorBooking
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def get_all_docs(request):
-    # Assuming DoctorProfileFilter is adjusted to work with DoctorProfile instances
     filterset = DoctorFilter(
         request.GET,
         queryset=DoctorProfile.objects.select_related("user").order_by("rating"),
