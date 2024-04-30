@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from accounts.serializers import DoctorProfileSerializer
 from .models import DoctorBooking
+from .filters import DoctorBookingFilter
 
 
 @api_view(["GET"])
@@ -38,13 +39,16 @@ def doctor_detail(request, pk):
     return Response(serializer.data)
 
 
+
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def get_all_booking(request):
     queryset = DoctorBooking.objects.filter(doctor=request.user)
+    # Applying the filter
+    filter = DoctorBookingFilter(request.GET, queryset=queryset)
+    queryset = filter.qs
     serializer = DoctorReadBookingSerializer(queryset, many=True)
     return Response(serializer.data)
-
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])

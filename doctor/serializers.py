@@ -43,6 +43,9 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
         
 class DoctorBookingCancelSerializer(serializers.ModelSerializer):
     booking = DoctorReadBookingSerializer(read_only=True)
+    doctor = serializers.CharField(read_only=True)
+    patient = serializers.CharField(read_only=True)
+    service = serializers.CharField(read_only=True)    
     cancel_reason = serializers.CharField(required=True)
     class Meta:
         model = DoctorBooking
@@ -51,7 +54,9 @@ class DoctorBookingCancelSerializer(serializers.ModelSerializer):
 
 class DoctorBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
     booking = DoctorReadBookingSerializer(read_only=True)
-    # booking_date = serializers.CharField(required=True)
+    doctor = serializers.CharField(read_only=True)
+    patient = serializers.CharField(read_only=True)
+    service = serializers.CharField(read_only=True)
 
     class Meta:
         model = DoctorBooking
