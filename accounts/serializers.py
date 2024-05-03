@@ -62,6 +62,10 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "password",
             "confirm_password",
             "role",
+            "city",
+            "government",
+            "gender",
+            "phone_number"
         ]
 
     def validate_email(self, value):
@@ -99,6 +103,10 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
             "password",
             "confirm_password",
             "role",
+            "city",
+            "government",
+            "gender",
+            "phone_number"
         ]
 
     def validate_email(self, value):
