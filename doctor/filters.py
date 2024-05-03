@@ -1,5 +1,6 @@
 from django_filters import rest_framework as filters
 from accounts.models import DoctorProfile
+from .models import DoctorBooking
 
 
 class DoctorFilter(filters.FilterSet):
@@ -13,11 +14,6 @@ class DoctorFilter(filters.FilterSet):
 
 
 
-
-
-
-from .models import DoctorBooking
-
 class DoctorBookingFilter(filters.FilterSet):
     class Meta:
         model = DoctorBooking
@@ -25,3 +21,6 @@ class DoctorBookingFilter(filters.FilterSet):
             'is_completed': ['exact'],
             'is_cancelled': ['exact'],
         }
+
+
+
