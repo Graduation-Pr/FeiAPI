@@ -1,20 +1,18 @@
 from django.shortcuts import render
 from rest_framework import generics
-
-from pharmacy.filters import ProductFilter
-
-# from django.contrib.auth.models import User
-from .models import Cart, CartItems, Product
+from pharmacy.filters import ProductFilter, DeviceFilter, MedicineFilter
+from .models import Cart, CartItems, Product, Device, Medicine
 from .serializers import (
     AddCartItemSerializer,
     CartItemSerializer,
     CartSerializer,
     ProductSerializer,
     UpdateCartItemSerializer,
+    MedicineSerializer,
+    DeviceSerializer,
 )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import permissions
-from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -35,10 +33,42 @@ def get_all_products(request):
     return paginator.get_paginated_response({"product": serializer.data})
 
 
-class DetailProduct(generics.RetrieveAPIView):
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_devices(request):
+    filterset = DeviceFilter(request.GET, queryset=Device.objects.all().order_by("id"))
+    paginator = PageNumberPagination()
+    paginator.page_size = 6
+    queryset = paginator.paginate_queryset(filterset.qs, request)
+
+    serializer = DeviceSerializer(queryset, many=True)
+    return paginator.get_paginated_response({"devices": serializer.data})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_medicines(request):
+    filterset = MedicineFilter(
+        request.GET, queryset=Medicine.objects.all().order_by("id")
+    )
+    paginator = PageNumberPagination()
+    paginator.page_size = 6
+    queryset = paginator.paginate_queryset(filterset.qs, request)
+
+    serializer = MedicineSerializer(queryset, many=True)
+    return paginator.get_paginated_response({"medicines": serializer.data})
+
+
+class DetailMedicine(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    queryset = Medicine.objects.all()
+    serializer_class = MedicineSerializer
+
+
+class DetailDevice(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Device.objects.all()
+    serializer_class = DeviceSerializer
 
 
 class CartViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):

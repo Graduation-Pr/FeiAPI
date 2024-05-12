@@ -1,12 +1,30 @@
 import django_filters
-from .models import Product
+from .models import Product, Medicine
 
 
 class ProductFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr="icontains")
+
+    class Meta:
+        model = Product
+        fields = ["name"]
+
+
+class MedicineFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_expr="icontains")
     category = django_filters.CharFilter(lookup_expr="icontains")
     subcategory = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
-        model = Product
+        model = Medicine
+        fields = ["name", "category", "subcategory"]
+
+
+class DeviceFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr="icontains")
+    category = django_filters.CharFilter(lookup_expr="icontains")
+    subcategory = django_filters.CharFilter(lookup_expr="icontains")
+
+    class Meta:
+        model = Medicine
         fields = ["name", "category", "subcategory"]

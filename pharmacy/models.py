@@ -20,7 +20,6 @@ class Pharmacy(models.Model):
     rating = models.IntegerField(
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
-    # id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, unique=True)
 
 
 class MedCategory(models.TextChoices):
@@ -28,13 +27,8 @@ class MedCategory(models.TextChoices):
     VITAMINS = "Vitamins&supplement"
 
 
-    # class DevCategory(models.TextChoices):
-    #     HOME_HEALTH_CARE = "Home Health Care"
-
-
-
-
 class DevSubCategory(models.TextChoices):
+    # Subcategories for Home Health Care
     DIABETES_CARE = "Diabetes Care", "Diabetes Care"
     BLOOD_PRESSURE_MONITOR = "Blood Pressure Monitor", "Blood Pressure Monitor"
     THERMOMETERS = "Thermometers", "Thermometers"
@@ -51,9 +45,6 @@ class Subcategory(models.TextChoices):
     VITAMIN_C = "Vitamin C", "Vitamin C"
     VITAMIN_D = "Vitamin D", "Vitamin D"
 
-    # Subcategories for Home Health Care
-
-
 
 class Product(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
@@ -69,7 +60,6 @@ class Product(models.Model):
         return self.name
 
 
-
 class Medicine(Product):
     pill_dosage = models.CharField(max_length=10)
     category = models.CharField(max_length=40, choices=MedCategory.choices)
@@ -79,19 +69,11 @@ class Medicine(Product):
     )
 
 
-
-
-
 class Device(Product):
     category = models.CharField(max_length=50, default="Home Health Care")
     subcategory = models.CharField(
         max_length=40, choices=DevSubCategory.choices, null=True, blank=True
     )
-
-
-
-
-
 
 
 class Cart(models.Model):

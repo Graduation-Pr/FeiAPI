@@ -1,19 +1,51 @@
 from rest_framework import serializers
-from .models import Product, Cart, CartItems
+from .models import Product, Cart, CartItems, Medicine, Device
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
+            "id",
             "name",
             "description",
-            "category",
-            "subcategory",
             "price",
             "stock",
             "image",
             "is_fav",
+        )
+
+
+class MedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = (
+            "id",
+            "name",
+            "description",
+            "price",
+            "stock",
+            "image",
+            "is_fav",
+            "pill_dosage",
+            "category",
+            "subcategory",
+        )
+
+
+class DeviceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Device
+        fields = (
+            "id",
+            "name",
+            "description",
+            "price",
+            "stock",
+            "image",
+            "is_fav",
+            "category",
+            "subcategory",
         )
 
 
