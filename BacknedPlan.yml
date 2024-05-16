@@ -132,6 +132,8 @@ Stage9: Payment
     - doctor-payment (done)
     - cvv
     - return cart detail based on user token
+    - add amount to the card
+
 
 
 Stage10: Chats
