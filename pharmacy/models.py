@@ -78,7 +78,7 @@ class Device(Product):
 
 class Cart(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_cart")
     created = models.DateTimeField(auto_now_add=True)
 
 

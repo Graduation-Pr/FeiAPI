@@ -130,6 +130,8 @@ Stage9: Payment
     - pharmacy payment(done)
     - labs payment
     - doctor-payment (done)
+    - cvv
+    - return cart detail based on user token
 
 
 Stage10: Chats

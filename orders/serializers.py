@@ -27,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "placed_at", "pending_status", "owner", "items"]
+        fields = ["id", "placed_at", "owner", "items", "total_price", "pending_status"]
 
     def get_owner(self, obj):
         return obj.owner.username
