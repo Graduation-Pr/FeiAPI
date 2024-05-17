@@ -57,6 +57,11 @@ class PatientProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Patient Profile"
 
+SPECIALIZATION = (
+    ("CARDIOLOGIST","cardiologist"),
+    ("Neurologist","Neurologist"),
+    ("Pulmonologist","Pulmonologist")
+)
 
 class DoctorProfile(models.Model):
     user = models.OneToOneField(
@@ -69,6 +74,7 @@ class DoctorProfile(models.Model):
     )
     experience = models.PositiveIntegerField(null=True, blank=True)
     doctor_patients = models.PositiveBigIntegerField(null=True, blank=True)
+    specialization = models.CharField(max_length=50, choices=SPECIALIZATION)
 
     def __str__(self):
         return f"{self.user.username}'s Doctor Profile"

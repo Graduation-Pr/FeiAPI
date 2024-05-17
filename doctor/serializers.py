@@ -12,7 +12,7 @@ class DoctorListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorProfile
-        fields = ("first_name", "last_name", "government", "rating", "city", "image")
+        fields = ("first_name", "last_name", "government", "rating", "city", "image", "specialization")
 
 
 
