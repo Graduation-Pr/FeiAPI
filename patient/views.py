@@ -1,3 +1,5 @@
+from doctor.models import DoctorBooking
+from doctor.serializers import DoctorReadBookingSerializer
 from laboratory.models import Laboratory
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
 from rest_framework.response import Response
@@ -65,8 +67,6 @@ def create_doctor_booking(request, doctor_id):
         )
 
         
-        
-
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -123,3 +123,40 @@ def create_lab_booking(request, lab_id):
         return Response(
             {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+        
+        
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def doctor_review(request, pk):
+    if request.user.role != "PATIENT":
+        return Response({"message": "you have to be a patient to make review"}, 
+                        status=status.HTTP_401_UNAUTHORIZED)
+    
+    patient = request.user
+    data = request.data
+    
+    try:
+        doctor = User.objects.get(id=pk)
+    except User.DoesNotExist:
+        return Response({"message": "enter a valid doctor ID"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    
+    if doctor.role != "DOCTOR":
+        return Response({"message": "enter a valid doctor ID"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    
+    booking = DoctorBooking.objects.filter(patient=patient, doctor=doctor, is_completed=True).last()
+    
+    if not booking:
+        return Response({"message": "you don't have a booking with this doctor or you have not completed your booking"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+    booking.review = data.get("review", "")
+    booking.save()
+    
+    serializer = DoctorReadBookingSerializer(booking)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    

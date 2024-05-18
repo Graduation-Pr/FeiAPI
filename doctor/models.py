@@ -29,6 +29,7 @@ class DoctorBooking(models.Model):
     is_cancelled = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     cancel_reason = models.CharField(max_length=200, null=True, blank=True)
+    review = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return f"{self.patient.username}'s booking with Dr {self.doctor.username}"
