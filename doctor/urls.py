@@ -7,6 +7,7 @@ from .views import (
     booking_detail,
     reschedual_booking,
     complete_booking,
+    doctor_patients
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path("bookings/<int:pk>/reschedual/", reschedual_booking, name="reschedual-doctor"),
     path("bookings/<int:pk>/complete/", complete_booking, name="reschedual-doctor"),
     path("bookings/<int:pk>/", booking_detail, name="booking-detail"),
+    path('patients/', doctor_patients, name='doctor-patients'),
 ]

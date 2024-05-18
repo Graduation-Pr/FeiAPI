@@ -53,6 +53,7 @@ class PatientProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="patient_profile"
     )
+    
 
     def __str__(self):
         return f"{self.user.username}'s Patient Profile"

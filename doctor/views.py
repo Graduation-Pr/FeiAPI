@@ -6,6 +6,7 @@ from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     DoctorListSerializer,
+    DoctorPatientSerializer,
     DoctorReadBookingSerializer,
     DoctorBookingCancelSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
@@ -33,6 +34,7 @@ def get_all_docs(request):
 
 
 @api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def doctor_detail(request, pk):
     doctor = User.objects.get(id=pk)
     if doctor.role == "DOCTOR":
@@ -43,6 +45,24 @@ def doctor_detail(request, pk):
 
         serializer = DoctorProfileSerializer(doctor_profile)
         return Response(serializer.data)
+    
+    
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def doctor_patients(request):
+    doctor = request.user
+    
+    if doctor.role == "DOCTOR":
+        bookings = DoctorBooking.objects.filter(doctor=doctor, is_cancelled=False)
+        patients = set(booking.patient for booking in bookings)
+
+        # Serialize the patients with context
+        serializer = DoctorPatientSerializer(patients, many=True, context={'doctor': doctor})
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response({"detail": "User is not a doctor"}, status=403)
+
 
 
 @api_view(["GET"])

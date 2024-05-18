@@ -61,5 +61,29 @@ class DoctorBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoctorBooking
         fields = "__all__"
+        
+        
+class DoctorPatientSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+    full_name = serializers.SerializerMethodField()
+    booking_id = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ("image","location","full_name","booking_id")
 
+    def get_full_name(self, obj):
+        first_name = obj.first_name
+        last_name = obj.last_name
+        return f"{first_name} {last_name}"
+    
+    def get_location(self, obj):
+        city = obj.city
+        government = obj.government
+        return f"{government},{city}"
 
+    def get_booking_id(self, obj):
+        # Assuming you want to get the booking ID related to this doctor and patient
+        doctor = self.context['doctor']
+        booking = DoctorBooking.objects.filter(doctor=doctor, patient=obj).first()
+        return booking.id if booking else None
