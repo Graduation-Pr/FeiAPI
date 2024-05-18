@@ -5,16 +5,19 @@ from .models import LabBooking, Laboratory, LabService
 class LaboratorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Laboratory
-        fields = ("name", "image", "rate", "city")
+        fields = ("id", "name", "image", "rate", "city")
 
 
 class LaboratoryDetailSerializer(serializers.ModelSerializer):
+    lab_patients = serializers.SerializerMethodField()
     class Meta:
         model = Laboratory
-        fields = "__all__"
+        fields = ("name", "image", "city", "rate", "phone_num", "technology", "about", "lab_patients")
 
-
-
+    def get_lab_patients(self, obj):       
+        bookings = LabBooking.objects.filter(id=obj.id).count()
+        return bookings
+    
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabService

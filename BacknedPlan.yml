@@ -65,15 +65,15 @@ Stage3: Labs(done)
         - fliter(type)
     #set appointment
 
-Stage4: HomePage
+Stage4: HomePage  (done)
     - list all docs (done)
     - top 5 docs (done)
     - top 3 pharms
     - labs
     - user_profile
 
-Stage5: Bookings
-    Doctor-Booking:
+Stage5: Bookings (done)
+    Doctor-Booking: (done)
         - book function 
         - date, time
         - package 
@@ -82,7 +82,7 @@ Stage5: Bookings
         - cancel[reason, reschedual]
         - patients in doctor app(get the number of patients through the number of doctor bookings) 
     
-    Lab-Booking:
+    Lab-Booking: (done)
         - book function
         - date, time 
         - user => lab relationship
@@ -122,16 +122,16 @@ Stage6: Plans
 
 
 Stage7: Patients App
-    - list doctor-related patients
+    - list doctor-related patients (done)
     - review doctor
 
 
 Stage9: Payment
     - pharmacy payment(done)
-    - labs payment
+    - labs payment(done)
     - doctor-payment (done)
     - cvv
-    - return cart detail based on user token
+    - return cart detail based on user token(done)
     - add amount to the card
 
 

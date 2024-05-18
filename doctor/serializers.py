@@ -85,5 +85,5 @@ class DoctorPatientSerializer(serializers.ModelSerializer):
     def get_booking_id(self, obj):
         # Assuming you want to get the booking ID related to this doctor and patient
         doctor = self.context['doctor']
-        booking = DoctorBooking.objects.filter(doctor=doctor, patient=obj).first()
+        booking = DoctorBooking.objects.filter(doctor=doctor, patient=obj).last()
         return booking.id if booking else None

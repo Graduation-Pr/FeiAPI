@@ -24,7 +24,7 @@ class Laboratory(models.Model):
     phone_num = models.CharField(max_length=13)
     technology = models.CharField(max_length=50)
     about = models.TextField()
-    patient = models.PositiveIntegerField()
+    # patient = models.PositiveIntegerField()
     
     def __str__(self):
         return self.name

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import LabBookingCancelSerializer, LabBookingReschdualAndCompleteSerializer, LabReadBookingSerializer, LaboratorySerializer
+from .serializers import LabBookingCancelSerializer, LabBookingReschdualAndCompleteSerializer, LabReadBookingSerializer, LaboratorySerializer, LaboratoryDetailSerializer
 from .models import LabBooking, Laboratory
 from rest_framework import generics
 from .filters import LabBookingFilter, LaboratoryFilter
@@ -28,7 +28,7 @@ def get_all_labs(request):
 class DetailLaboratory(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Laboratory.objects.all()
-    serializer_class = LaboratorySerializer
+    serializer_class = LaboratoryDetailSerializer
 
 
 
