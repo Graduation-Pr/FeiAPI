@@ -4,6 +4,7 @@ from .models import DoctorBooking, Service
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
+    doctor_id = serializers.SerializerMethodField()
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
     government = serializers.CharField(source="user.government")
@@ -12,8 +13,11 @@ class DoctorListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorProfile
-        fields = ("first_name", "last_name", "government", "rating", "city", "image", "specialization")
+        fields = ("doctor_id", "first_name", "last_name", "government", "rating", "city", "image", "specialization")
+    
 
+    def get_doctor_id(self, obj):
+        return obj.user.id
 
 
 

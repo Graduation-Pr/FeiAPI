@@ -36,16 +36,25 @@ def get_all_docs(request):
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def doctor_detail(request, pk):
-    doctor = User.objects.get(id=pk)
+    try:
+        doctor = User.objects.get(id=pk)
+    except User.DoesNotExist:
+        return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+
     if doctor.role == "DOCTOR":
-        doctor_profile = DoctorProfile.objects.get(user=doctor)
+        try:
+            doctor_profile = DoctorProfile.objects.get(user=doctor)
+        except DoctorProfile.DoesNotExist:
+            return Response({"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
         doctor_bookings = DoctorBooking.objects.filter(doctor=doctor).count()
         doctor_profile.doctor_patients = doctor_bookings
         doctor_profile.save()
 
         serializer = DoctorProfileSerializer(doctor_profile)
-        return Response(serializer.data)
-    
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "User is not a doctor"}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
