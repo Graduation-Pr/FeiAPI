@@ -33,3 +33,12 @@ class DoctorBooking(models.Model):
 
     def __str__(self):
         return f"{self.patient.username}'s booking with Dr {self.doctor.username}"
+
+
+class PatientPlan(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor_plan")
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient_plan")
+    
+    
+    def __str__(self):
+        return f"{self.patient.username}'s plan with Dr {self.doctor.username}"

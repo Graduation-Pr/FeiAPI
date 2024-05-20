@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from accounts.models import DoctorProfile, User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
+from rest_framework import permissions,status
 from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
@@ -10,12 +10,13 @@ from .serializers import (
     DoctorReadBookingSerializer,
     DoctorBookingCancelSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
+    PatientPlanSerializer,
 )
 from rest_framework.response import Response
-from rest_framework import status
 from accounts.serializers import DoctorProfileSerializer
-from .models import DoctorBooking
+from .models import DoctorBooking, PatientPlan
 from .filters import DoctorBookingFilter
+from django.shortcuts import get_object_or_404
 
 
 @api_view(["GET"])
@@ -174,3 +175,20 @@ def complete_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_patient_plan(request,pk):
+    doctor = request.user
+    patient = get_object_or_404(User, id=pk)
+    if doctor.role != "DOCTOR":
+        return Response({"message:":"you have to be a doctor to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    if patient.role != "PATIENT":
+        return Response({"message:":"you have to be a doctor to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    patient_plan = get_object_or_404(PatientPlan, patient=patient, doctor=doctor)
+    serializer = PatientPlanSerializer(patient_plan)
+    return Response(serializer.data)
+    

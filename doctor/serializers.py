@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from accounts.models import DoctorProfile, User
-from .models import DoctorBooking, Service
+from accounts.serializers import SimpleUserSerializer
+from .models import DoctorBooking, Service, PatientPlan
+from patient.models import PatientMedicine
+from pharmacy.serializers import SimpleMedicineSerializer
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
@@ -92,3 +95,20 @@ class DoctorPatientSerializer(serializers.ModelSerializer):
         doctor = self.context['doctor']
         booking = DoctorBooking.objects.filter(doctor=doctor, patient=obj).last()
         return booking.id if booking else None
+    
+    
+    
+class PatientMedicineSerializer(serializers.ModelSerializer):
+    medicine = SimpleMedicineSerializer()
+    class Meta:
+        model = PatientMedicine
+        fields = ("id", "medicine", "dose", "program", "plan", "start_date", "end_date")
+        
+        
+class PatientPlanSerializer(serializers.ModelSerializer):
+    patient_medicines = PatientMedicineSerializer(source='medicine_plan', many=True)
+    doctor = SimpleUserSerializer (read_only=True)
+    patient = SimpleUserSerializer (read_only=True)
+    class Meta:
+        model = PatientPlan
+        fields = ("id", "doctor", "patient", "patient_medicines") 

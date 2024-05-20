@@ -16,6 +16,14 @@ class ProductSerializer(serializers.ModelSerializer):
         )
 
 
+class SimpleMedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = (
+            "name",
+            "pill_dosage")
+
+
 class MedicineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Medicine
