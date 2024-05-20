@@ -92,46 +92,43 @@ Stage5: Bookings (done)
 
 Stage6: Medical Profile
     patient:
-        - doctor comment
+        - comment
         - lab result
         - prescriptions
         - tests
-        - comment
+    
         
 
 Stage6: Plans
-    Doctor:
+    Doctor: (done)
         #CRUDS
         - patient
             - medicines(CRUDS)
         
-        #Medcines
+        #Medcines (done)
             - name
             - dose 
             - bill-dosage
             - program
-            - bill taken[view only]
 
-    Patients:
-        #Medcines
-        - name
-        - dose 
-        - bill-dosage
-        - program
-        - bill taken[view only, take]
+            - bill taken[view only]
+            - quantity
+
 
 
 Stage7: Patients App
     - list doctor-related patients (done)
-    - review doctor
+    - review doctor (done)
+    - review lab 
+    - list doctor reviews, add rate to review function
 
 
 Stage9: Payment
     - pharmacy payment(done)
     - labs payment(done)
     - doctor-payment (done)
-    - cvv
     - return cart detail based on user token(done)
+    - cvv
     - add amount to the card
 
 

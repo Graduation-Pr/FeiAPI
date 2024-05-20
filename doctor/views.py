@@ -2,6 +2,8 @@ from django.shortcuts import render
 from accounts.models import DoctorProfile, User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions,status
+
+from patient.models import PatientMedicine
 from .filters import DoctorFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
@@ -10,6 +12,8 @@ from .serializers import (
     DoctorReadBookingSerializer,
     DoctorBookingCancelSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
+    PatientMedicineCreateSerializer,
+    PatientMedicineSerializer,
     PatientPlanSerializer,
     CreatePatientPlanSerializer
 )
@@ -217,3 +221,24 @@ def create_patient_plan(request, pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def create_patient_medicine(request):
+    serializer = PatientMedicineCreateSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_patient_medicine(request, pk):
+    patient_medicine = get_object_or_404(PatientMedicine, pk=pk)
+    serializer = PatientMedicineSerializer(patient_medicine)
+    return Response(serializer.data)
