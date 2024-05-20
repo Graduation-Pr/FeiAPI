@@ -8,7 +8,8 @@ from .views import (
     reschedual_booking,
     complete_booking,
     doctor_patients,
-    get_patient_plan
+    get_patient_plan,
+    create_patient_plan,
 )
 
 urlpatterns = [
@@ -21,4 +22,5 @@ urlpatterns = [
     path("bookings/<int:pk>/", booking_detail, name="booking-detail"),
     path("patients/", doctor_patients, name="doctor-patients"),
     path("patient_plan/<int:pk>/", get_patient_plan),
+    path('create/patient_plan/<int:pk>/', create_patient_plan),
 ]

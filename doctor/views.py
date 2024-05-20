@@ -11,6 +11,7 @@ from .serializers import (
     DoctorBookingCancelSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
     PatientPlanSerializer,
+    CreatePatientPlanSerializer
 )
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
@@ -191,4 +192,28 @@ def get_patient_plan(request,pk):
     patient_plan = get_object_or_404(PatientPlan, patient=patient, doctor=doctor)
     serializer = PatientPlanSerializer(patient_plan)
     return Response(serializer.data)
-    
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def create_patient_plan(request, pk):
+    doctor = request.user
+    patient = get_object_or_404(User, id=pk)
+    if doctor.role != "DOCTOR":
+        return Response({"message:":"you have to be a doctor to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    if patient.role != "PATIENT":
+        return Response({"message:":"you have to be a doctor to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    data = {
+        "doctor": doctor.id,
+        "patient": patient.id,
+    }
+
+    serializer = CreatePatientPlanSerializer(data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

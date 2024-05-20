@@ -8,7 +8,7 @@ class PatientMedicine(models.Model):
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name="patient_medicine")
     dose = models.PositiveIntegerField()
     program = models.PositiveIntegerField()  # duration in weeks
-    plan = models.ForeignKey(PatientPlan, on_delete=models.CASCADE, related_name="medicine_plan")
+    plan = models.ForeignKey(PatientPlan, on_delete=models.CASCADE, related_name="medicine_plan",blank=True, null=True)
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(blank=True, null=True)
 

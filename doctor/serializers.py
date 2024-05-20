@@ -112,3 +112,20 @@ class PatientPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientPlan
         fields = ("id", "doctor", "patient", "patient_medicines") 
+        
+        
+# class CreatePatientPlanSerializer(serializers.ModelSerializer):
+#         patient_medicines = PatientMedicineSerializer(source='medicine_plan', many=True)
+
+#     class Meta:
+#         model = PatientPlan
+#         fields = 
+
+
+class CreatePatientPlanSerializer(serializers.ModelSerializer):
+    patient_medicines = PatientMedicineSerializer(source='medicine_plan', many=True, read_only=True, required=False)
+    # doctor = SimpleUserSerializer (read_only=True)
+    # patient = SimpleUserSerializer (read_only=True)
+    class Meta:
+        model = PatientPlan
+        fields = ("id", "doctor", "patient", "patient_medicines")
