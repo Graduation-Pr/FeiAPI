@@ -102,8 +102,8 @@ class PatientMedicineSerializer(serializers.ModelSerializer):
     medicine = SimpleMedicineSerializer()
     class Meta:
         model = PatientMedicine
-        fields = ("id", "medicine", "dose", "program", "plan", "start_date", "end_date")
-        
+        fields = ("id", "medicine", "dose", "program", "plan", "quantity", "start_date", "end_date")
+    
         
 class PatientPlanSerializer(serializers.ModelSerializer):
     patient_medicines = PatientMedicineSerializer(source='medicine_plan', many=True)

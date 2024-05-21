@@ -11,6 +11,9 @@ class PatientMedicine(models.Model):
     plan = models.ForeignKey(PatientPlan, on_delete=models.CASCADE, related_name="medicine_plan")
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(blank=True, null=True)
+    quantity = models.PositiveIntegerField(blank=True, null=True)
+
+    
 
     def clean(self):
         if not self.program:
@@ -22,13 +25,14 @@ class PatientMedicine(models.Model):
         
         # Save the object first to ensure start_date is set
         super().save(*args, **kwargs)
+        
 
         # Now calculate end_date based on start_date and program
         if self.start_date and self.program:
+            self.quantity = self.dose * self.program * 7  # assuming dose is per day and program is in weeks
             self.end_date = self.start_date + timedelta(weeks=self.program)
             # Save the object again to store the calculated end_date
-            super().save(update_fields=['end_date'])
-            
-            
+            super().save(update_fields=['end_date', 'quantity'])
+
     def __str__(self):
         return f"{self.medicine.name} for {self.dose} times a day"

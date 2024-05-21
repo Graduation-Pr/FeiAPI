@@ -1,5 +1,5 @@
-from doctor.models import DoctorBooking
-from doctor.serializers import DoctorReadBookingSerializer
+from doctor.models import DoctorBooking, PatientPlan
+from doctor.serializers import DoctorReadBookingSerializer, PatientMedicineSerializer, PatientPlanSerializer
 from laboratory.models import Laboratory
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
 from rest_framework.response import Response
@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from orders.models import CreditCard
 from rest_framework.decorators import api_view, permission_classes
+from django.shortcuts import get_object_or_404
+from .models import PatientMedicine
 
 
 @api_view(["POST"])
@@ -158,5 +160,58 @@ def doctor_review(request, pk):
     
     serializer = DoctorReadBookingSerializer(booking)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_patient_plans(request):
+    patient = request.user
+    if patient.role != "PATIENT":
+        return Response({"message:":"you have to be a user to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    patient_plans = PatientPlan.objects.filter(patient=patient)
+    serializer = PatientPlanSerializer(patient_plans, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_patient_plan(request,pk):
+    patient = request.user
+    doctor = get_object_or_404(User, id=pk)
+    if doctor.role != "DOCTOR":
+        return Response({"message:":"the id passed is not a doctor id"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    if patient.role != "PATIENT":
+        return Response({"message:":"you have to be a user to use this function"},
+                        status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        patient_plan = PatientPlan.objects.filter(doctor=doctor, patient=patient).last()
+    except PatientPlan.DoesNotExist:
+        return Response({"message:":"patient plan does not exist"})
+    serializer = PatientPlanSerializer(patient_plan)
+    return Response(serializer.data)
+
+@api_view(["POST","GET"])
+@permission_classes([IsAuthenticated])
+def take_medicine(request,pk):
+    patient = request.user
+    medicine = get_object_or_404(PatientMedicine, id=pk)
+    if request.method == "POST":      
+        if patient.role != "PATIENT":
+            return Response({"message": "you have to be a patient to use this function"}, 
+                            status=status.HTTP_401_UNAUTHORIZED)
+        medicine.left -= 1
+        medicine.save()
+        serializer = PatientMedicineSerializer(medicine)
+        return Response(serializer.data)
+
+    if request.method == "GET":
+        get_serializer = PatientMedicineSerializer(medicine)
+        return Response(get_serializer.data)
+    
+    
+        
+    
+    
 
     

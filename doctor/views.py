@@ -191,7 +191,7 @@ def get_patient_plan(request,pk):
         return Response({"message:":"you have to be a doctor to use this function"},
                         status=status.HTTP_401_UNAUTHORIZED)
     if patient.role != "PATIENT":
-        return Response({"message:":"you have to be a doctor to use this function"},
+        return Response({"message:":"you have to be a user to use this function"},
                         status=status.HTTP_401_UNAUTHORIZED)
     patient_plan = get_object_or_404(PatientPlan, patient=patient, doctor=doctor)
     serializer = PatientPlanSerializer(patient_plan)
@@ -207,7 +207,7 @@ def create_patient_plan(request, pk):
         return Response({"message:":"you have to be a doctor to use this function"},
                         status=status.HTTP_401_UNAUTHORIZED)
     if patient.role != "PATIENT":
-        return Response({"message:":"you have to be a doctor to use this function"},
+        return Response({"message:":"you have to be a user to use this function"},
                         status=status.HTTP_401_UNAUTHORIZED)
     data = {
         "doctor": doctor.id,
