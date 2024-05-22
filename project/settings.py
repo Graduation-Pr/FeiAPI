@@ -184,7 +184,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 
-
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
@@ -194,3 +193,33 @@ django_heroku.settings(locals())
 
 
 FLW_SEC_KEY = "FLWSECK_TEST-524202ecc0408804b8fbeae288174021-X"
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "FeiAPI",
+    "site_header": "Fei Administration",
+    "site_brand": "Fei API",
+    "welcome_sign": "Welcome to Fei Adminstration",
+    # "site_logo": "feiapi.jpg",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "books": "fas fa-book",
+        "books.book": "fas fa-book-open",
+        "books.author": "fas fa-user-tie",
+    },
+    "theme": "darkly",
+    "dark_mode_theme": "cyborg",
+    "show_ui_builder": True,
+    "user_avatar": "user.avatar",
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+    "related_modal_active": False,
+}
+
