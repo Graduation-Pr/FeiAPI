@@ -133,6 +133,20 @@ Stage9: Payment
 
 
 Stage10: Chats
+    Websocket: 
+        - connect
+
+        - disconnect
+
+        - send_group
+
+        - broadcast_group
+
+        - message_list
+        
+        - message_send
+
+
 
 Stage11: AI integration
 
