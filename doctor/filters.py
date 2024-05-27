@@ -15,13 +15,13 @@ class DoctorFilter(filters.FilterSet):
 
 
 
-class DoctorBookingFilter(filters.FilterSet):
-    class Meta:
-        model = DoctorBooking
-        fields = {
-            'is_completed': ['exact'],
-            'is_cancelled': ['exact'],
-        }
+# class DoctorBookingFilter(filters.FilterSet):
+#     class Meta:
+#         model = DoctorBooking
+#         fields = {
+#             'is_completed': ['exact'],
+#             'is_cancelled': ['exact'],
+#         }
 
 
 

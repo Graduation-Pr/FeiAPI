@@ -12,7 +12,7 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorBooking
-        fields = ["id", "doctor", "patient", "booking_date", "service", "payment_card"]
+        fields = ["id", "doctor", "patient", "booking_date", "service", "payment_card", "status"]
 
 
     def create(self, validated_data):

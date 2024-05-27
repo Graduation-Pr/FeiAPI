@@ -45,7 +45,8 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
             "patient",
             "service",
             "booking_date",
-            "review"
+            "status",
+            "review",
         )
         
 class DoctorBookingCancelSerializer(serializers.ModelSerializer):
