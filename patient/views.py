@@ -256,6 +256,21 @@ def get_doctor_bookings(request):
     return Response(serializer.data)
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_lab_bookings(request):
+    queryset = LabBooking.objects.filter(patient=request.user)
+
+    # Applying the filter
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DoctorBookingFilter
+
+    filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
+
+    serializer = LabReadBookingSerializer(filtered_queryset, many=True)
+    return Response(serializer.data)
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def cancel_booking(request, pk):
@@ -288,12 +303,3 @@ def cancel_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_lab_bookings(request):
-    queryset = LabBooking.objects.filter(patient=request.user)
-    # Applying the filter
-    serializer = LabReadBookingSerializer(queryset, many=True)
-    return Response(serializer.data)

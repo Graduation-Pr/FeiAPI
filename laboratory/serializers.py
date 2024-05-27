@@ -48,6 +48,7 @@ class LabReadBookingSerializer(serializers.ModelSerializer):
             "lab",
             "patient",
             "service",
+            "status",
             "booking_date",
         )
 

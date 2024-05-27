@@ -15,3 +15,9 @@ class LaboratoryFilter(filters.FilterSet):
 
 
 
+class LabBookingFilter(filters.FilterSet):
+    class Meta:
+        model = LabBooking
+        fields = {
+            "status": ["exact"],
+        }
