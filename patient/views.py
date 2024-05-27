@@ -1,3 +1,4 @@
+from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan
 from doctor.serializers import (
     DoctorReadBookingSerializer,
@@ -14,6 +15,7 @@ from orders.models import CreditCard
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from .models import PatientMedicine
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 @api_view(["POST"])
@@ -235,3 +237,52 @@ def take_medicine(request, pk):
     if request.method == "GET":
         get_serializer = PatientMedicineSerializer(medicine)
         return Response(get_serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_bookings(request):
+    queryset = DoctorBooking.objects.filter(patient=request.user)
+
+    # Applying filter if 'status' parameter is provided in the request
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DoctorBookingFilter
+
+    filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
+
+    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def cancel_booking(request, pk):
+    user = request.user
+    data = request.data
+    try:
+        booking = DoctorBooking.objects.get(id=pk)
+        if booking.patient == user:
+            if booking.status == "completed":
+                return Response(
+                    "this booking is already completed",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if booking.status == "canceled":
+                return Response(
+                    "this booking is already canceled",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            booking.cancel_reason = data.get("cancel_reason", "")
+            booking.status = "canceled"  # Update the status field
+            booking.save()
+            serializer = DoctorBookingCancelSerializer(booking)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"errors": "You do not have permission to cancel this booking."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+    except DoctorBooking.DoesNotExist:
+        return Response(
+            {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )

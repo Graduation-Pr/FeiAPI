@@ -147,6 +147,8 @@ Stage10: Chats
         - message_send
 
 
+	- check on all list functions -> pagination
+
 
 Stage11: AI integration
 
