@@ -35,7 +35,8 @@ def get_all_docs(request):
     paginator.page_size = 5
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
-    serializer = DoctorListSerializer(queryset, many=True)
+    serializer = DoctorListSerializer(queryset, many=True, context={'request': request})
+    
     return paginator.get_paginated_response(serializer.data)
 
 

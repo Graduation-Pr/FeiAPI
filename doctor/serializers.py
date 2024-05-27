@@ -12,13 +12,12 @@ class DoctorListSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name")
     government = serializers.CharField(source="user.government")
     city = serializers.CharField(source="user.city")
-    image = serializers.CharField(source="user.image")
+    image = serializers.ImageField(source='user.image', read_only=True)
 
     class Meta:
         model = DoctorProfile
         fields = ("doctor_id", "first_name", "last_name", "government", "rating", "city", "image", "specialization")
     
-
     def get_doctor_id(self, obj):
         return obj.user.id
 
