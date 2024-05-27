@@ -22,6 +22,10 @@ class Pharmacy(models.Model):
     )
 
 
+    def __str__(self):
+        return self.name
+
+
 class MedCategory(models.TextChoices):
     MEDICATIONS = "Medications"
     VITAMINS = "Vitamins&supplement"
@@ -55,6 +59,7 @@ class Product(models.Model):
     description = models.TextField(max_length=100, default="", blank=False)
     stock = models.IntegerField(default=0)
     is_fav = models.BooleanField(default=False)
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, related_name='product_pharmacy')
 
     def __str__(self):
         return self.name

@@ -3,25 +3,20 @@ from .models import Product, Cart, CartItems, Medicine, Device
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    pharmacy = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
-        fields = (
-            "id",
-            "name",
-            "description",
-            "price",
-            "stock",
-            "image",
-            "is_fav",
-        )
+        fields = ("id", "name", "price", "pharmacy", "description")
+
+    def get_pharmacy(self, obj):
+        return obj.pharmacy.name
 
 
 class SimpleMedicineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Medicine
-        fields = (
-            "name",
-            "pill_dosage")
+        fields = ("name", "pill_dosage")
 
 
 class MedicineSerializer(serializers.ModelSerializer):
