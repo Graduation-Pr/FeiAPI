@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 
 from patient.models import PatientMedicine
-from .filters import DoctorFilter
+from .filters import DoctorFilter, DoctorBookingFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     DoctorListSerializer,
@@ -19,8 +19,11 @@ from .serializers import (
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
 from .models import DoctorBooking, PatientPlan
+from rest_framework import filters
+
 # from .filters import DoctorBookingFilter
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 @api_view(["GET"])
@@ -90,10 +93,14 @@ def doctor_patients(request):
 @permission_classes([permissions.IsAuthenticated])
 def get_all_booking(request):
     queryset = DoctorBooking.objects.filter(doctor=request.user)
-    # Applying the filter
-    # filter = DoctorBookingFilter(request.GET, queryset=queryset)
-    # queryset = filter.qs
-    serializer = DoctorReadBookingSerializer(queryset, many=True)
+
+    # Applying filter if 'status' parameter is provided in the request
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DoctorBookingFilter
+
+    filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
+
+    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True)
     return Response(serializer.data)
 
 
@@ -106,9 +113,15 @@ def cancel_booking(request, pk):
         booking = DoctorBooking.objects.get(id=pk)
         if booking.patient == user:
             if booking.status == "completed":
-                return Response("this booking is already completed", status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "this booking is already completed",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             if booking.status == "canceled":
-                return Response("this booking is already canceled", status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "this booking is already canceled",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             booking.cancel_reason = data.get("cancel_reason", "")
             booking.status = "canceled"  # Update the status field
             booking.save()
@@ -178,9 +191,15 @@ def complete_booking(request, pk):
         booking = DoctorBooking.objects.get(id=pk)
         if booking.doctor == user:
             if booking.status == "completed":
-                return Response("this booking is already completed", status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "this booking is already completed",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             if booking.status == "canceled":
-                return Response("this booking is already canceled", status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "this booking is already canceled",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             booking.status = "completed"
             booking.save()
             serializer = DoctorBookingReschdualAndCompleteSerializer(booking)
