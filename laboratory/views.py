@@ -1,8 +1,14 @@
 from django.shortcuts import render
-from .serializers import LabBookingCancelSerializer, LabBookingReschdualAndCompleteSerializer, LabReadBookingSerializer, LaboratorySerializer, LaboratoryDetailSerializer
+from .serializers import (
+    LabBookingCancelSerializer,
+    LabBookingReschdualAndCompleteSerializer,
+    LabReadBookingSerializer,
+    LaboratorySerializer,
+    LaboratoryDetailSerializer,
+)
 from .models import LabBooking, Laboratory
 from rest_framework import generics
-from .filters import LabBookingFilter, LaboratoryFilter
+from .filters import LaboratoryFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -29,18 +35,6 @@ class DetailLaboratory(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Laboratory.objects.all()
     serializer_class = LaboratoryDetailSerializer
-
-
-
-@api_view(["GET"])
-@permission_classes([permissions.IsAuthenticated])
-def get_all_booking(request):
-    queryset = LabBooking.objects.filter(patient=request.user)
-    # Applying the filter
-    filter = LabBookingFilter(request.GET, queryset=queryset)
-    queryset = filter.qs
-    serializer = LabReadBookingSerializer(queryset, many=True)
-    return Response(serializer.data)
 
 
 @api_view(["POST"])

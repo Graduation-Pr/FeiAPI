@@ -1,11 +1,13 @@
 from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan
 from doctor.serializers import (
+    DoctorBookingCancelSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
 )
-from laboratory.models import Laboratory
+from laboratory.models import LabBooking, Laboratory
+from laboratory.serializers import LabReadBookingSerializer
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
 from rest_framework.response import Response
 from accounts.models import User
@@ -241,7 +243,7 @@ def take_medicine(request, pk):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_all_bookings(request):
+def get_doctor_bookings(request):
     queryset = DoctorBooking.objects.filter(patient=request.user)
 
     # Applying filter if 'status' parameter is provided in the request
@@ -286,3 +288,12 @@ def cancel_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_lab_bookings(request):
+    queryset = LabBooking.objects.filter(patient=request.user)
+    # Applying the filter
+    serializer = LabReadBookingSerializer(queryset, many=True)
+    return Response(serializer.data)

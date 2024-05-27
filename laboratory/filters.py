@@ -15,10 +15,3 @@ class LaboratoryFilter(filters.FilterSet):
 
 
 
-class LabBookingFilter(filters.FilterSet):
-    class Meta:
-        model = LabBooking
-        fields = {
-            'is_completed': ['exact'],
-            'is_cancelled': ['exact'],
-        }
