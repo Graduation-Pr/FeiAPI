@@ -21,12 +21,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Authenticate the user
         if user and authenticate(username=username, password=password):
             data = super().validate(attrs)
-
+            cart_id = user.user_cart.id
             data["username"] = user.username
             data["email"] = user.email
             data["first_name"] = user.first_name
             data["last_name"] = user.last_name
             data["role"] = user.role
+            data["cart_id"] = cart_id
+
             return data
         else:
             raise serializers.ValidationError("Incorrect password.")
@@ -125,6 +127,8 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = User.objects.create_user(**validated_data)
+        cart = Cart.objects.create(user=user)
+
         return user
 
 
