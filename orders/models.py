@@ -7,7 +7,7 @@ from django.core.validators import MinLengthValidator, MaxLengthValidator
 class CreditCard(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card_number = models.CharField(max_length=16, validators=[MinLengthValidator(16), MaxLengthValidator(16)])
-    expiration_date = models.DateField()
+    expiration_date = models.CharField(max_length=5)
     cvv = models.CharField(max_length=3, validators=[MinLengthValidator(3), MaxLengthValidator(3)])
 
     def __str__(self):
