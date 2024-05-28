@@ -21,7 +21,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Authenticate the user
         if user and authenticate(username=username, password=password):
             data = super().validate(attrs)
-            
+
             data["username"] = user.username
             data["email"] = user.email
             data["first_name"] = user.first_name
@@ -66,7 +66,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "city",
             "government",
             "gender",
-            "phone_number"
+            "phone_number",
         ]
 
     def validate_email(self, value):
@@ -107,7 +107,7 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
             "city",
             "government",
             "gender",
-            "phone_number"
+            "phone_number",
         ]
 
     def validate_email(self, value):
@@ -130,21 +130,20 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
 
 class SimpleUserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = (
-        "name",
-        )
-        
+        fields = ("name",)
+
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}"
-            
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "first_name",
-            "last_name",
+            "full_name",
             "email",
             "username",
             "phone_number",
@@ -153,8 +152,14 @@ class UserSerializer(serializers.ModelSerializer):
             "image",
             "gender",
             "role",
-            "birth_date"
+            "birth_date",
         )
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
@@ -173,10 +178,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             "phone_number",  # Include phone_number field in the serializer
             "role",
             "birth_date",
-            "gender",
             "city",
             "government",
-
         ]
 
     def to_representation(self, instance):
@@ -188,7 +191,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             formatted_date = None
         data["birth_date"] = formatted_date
         return data
-
 
     def validate_phone_number(self, value):
         if value and len(value) != 10:
@@ -209,15 +211,12 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "rating",
             "experience",
             "doctor_patients",
-            "specialization"
+            "specialization",
         )
 
     # def get_doctor_patients(self):
     #     doctor_patients = self.context["doctor_patients"]
     #     return doctor_patients
-
-
-
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
