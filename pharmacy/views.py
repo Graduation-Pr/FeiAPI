@@ -9,7 +9,6 @@ from .serializers import (
     ProductSerializer,
     SimpleDeviceListSerializer,
     SimpleMedicineListSerializer,
-    SimpleMedicineSerializer,
     UpdateCartItemSerializer,
     MedicineSerializer,
     DeviceSerializer,
@@ -64,7 +63,9 @@ def get_all_devices(request, pk):
     paginator.page_size = 6
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
-    serializer = SimpleDeviceListSerializer(queryset, many=True, context={"request": request})
+    serializer = SimpleDeviceListSerializer(
+        queryset, many=True, context={"request": request}
+    )
     return paginator.get_paginated_response({"devices": serializer.data})
 
 

@@ -6,6 +6,7 @@ from doctor.serializers import (
     PatientMedicineSerializer,
     PatientPlanSerializer,
 )
+from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
@@ -276,7 +277,7 @@ def get_lab_bookings(request):
 
     # Applying the filter
     filter_backends = [DjangoFilterBackend]
-    filterset_class = DoctorBookingFilter
+    filterset_class = LabBookingFilter
 
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
 

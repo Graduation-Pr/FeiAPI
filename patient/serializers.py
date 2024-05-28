@@ -5,8 +5,8 @@ from orders.models import CreditCard
 
 
 class DoctorBookingSerializer(serializers.ModelSerializer):
-    doctor = serializers.CharField(read_only=True)
-    patient = serializers.CharField(read_only=True)
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    patient = serializers.CharField(read_only=True, source="patient.full_name")
     payment_card = serializers.CharField(read_only=True)
 
     class Meta:

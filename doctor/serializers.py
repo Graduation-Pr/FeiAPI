@@ -41,7 +41,7 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
     id = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
-    service = ServiceSerializer()
+    service = serializers.CharField(source='service.service')
 
     class Meta:
         model = DoctorBooking
