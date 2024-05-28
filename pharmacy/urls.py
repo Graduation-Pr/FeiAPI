@@ -14,9 +14,9 @@ from .views import (
 
 urlpatterns = [
     path("", get_all_pharmacies, name="pharmacies"),
-    path("products/", get_all_products, name="products"),
-    path("devices/", get_all_devices, name="products"),
-    path("medicines/", get_all_medicines, name="products"),
+    path("<int:pk>/products/", get_all_products, name="products"),
+    path("<int:pk>/devices/", get_all_devices, name="products"),
+    path("<int:pk>/medicines/", get_all_medicines, name="products"),
     path("devices/<int:pk>/", DetailDevice.as_view(), name="single_device"),
     path("medicines/<int:pk>/", DetailMedicine.as_view(), name="single_medcine"),
     path("carts/", cart_detail),

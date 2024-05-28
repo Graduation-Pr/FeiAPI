@@ -36,6 +36,24 @@ class MedicineSerializer(serializers.ModelSerializer):
         )
 
 
+class SimpleMedicineListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = (
+            "id",
+            "name",
+            "price",
+            "image",
+            "is_fav",
+        )
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
+
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
@@ -50,6 +68,24 @@ class DeviceSerializer(serializers.ModelSerializer):
             "category",
             "subcategory",
         )
+
+
+class SimpleDeviceListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Device
+        fields = (
+            "id",
+            "name",
+            "price",
+            "image",
+            "is_fav",
+        )
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
@@ -131,7 +167,6 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
 
 
 class PharmacySerializer(serializers.ModelSerializer):
-    # image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Pharmacy

@@ -7,6 +7,9 @@ from .serializers import (
     CartSerializer,
     PharmacySerializer,
     ProductSerializer,
+    SimpleDeviceListSerializer,
+    SimpleMedicineListSerializer,
+    SimpleMedicineSerializer,
     UpdateCartItemSerializer,
     MedicineSerializer,
     DeviceSerializer,
@@ -27,9 +30,15 @@ from .serializers import (
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_all_products(request):
+def get_all_products(request, pk):
+    try:
+        pharmacy = Pharmacy.objects.get(id=pk)
+    except Pharmacy.DoesNotExist:
+        return Response(
+            "pharmacy with requested id not found", status=status.HTTP_404_NOT_FOUND
+        )
     filterset = ProductFilter(
-        request.GET, queryset=Product.objects.all().order_by("id")
+        request.GET, queryset=Product.objects.filter(pharmacy=pharmacy).order_by("id")
     )
     paginator = PageNumberPagination()
     paginator.page_size = 6
@@ -41,27 +50,43 @@ def get_all_products(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_all_devices(request):
-    filterset = DeviceFilter(request.GET, queryset=Device.objects.all().order_by("id"))
-    paginator = PageNumberPagination()
-    paginator.page_size = 6
-    queryset = paginator.paginate_queryset(filterset.qs, request)
-
-    serializer = DeviceSerializer(queryset, many=True)
-    return paginator.get_paginated_response({"devices": serializer.data})
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_all_medicines(request):
-    filterset = MedicineFilter(
-        request.GET, queryset=Medicine.objects.all().order_by("id")
+def get_all_devices(request, pk):
+    try:
+        pharmacy = Pharmacy.objects.get(id=pk)
+    except Pharmacy.DoesNotExist:
+        return Response(
+            "pharmacy with requested id not found", status=status.HTTP_404_NOT_FOUND
+        )
+    filterset = DeviceFilter(
+        request.GET, queryset=Device.objects.filter(pharmacy=pharmacy).order_by("id")
     )
     paginator = PageNumberPagination()
     paginator.page_size = 6
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
-    serializer = MedicineSerializer(queryset, many=True)
+    serializer = SimpleDeviceListSerializer(queryset, many=True, context={"request": request})
+    return paginator.get_paginated_response({"devices": serializer.data})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_medicines(request, pk):
+    try:
+        pharmacy = Pharmacy.objects.get(id=pk)
+    except Pharmacy.DoesNotExist:
+        return Response(
+            "pharmacy with requested id not found", status=status.HTTP_404_NOT_FOUND
+        )
+    filterset = MedicineFilter(
+        request.GET, queryset=Medicine.objects.filter(pharmacy=pharmacy).order_by("id")
+    )
+    paginator = PageNumberPagination()
+    paginator.page_size = 6
+    queryset = paginator.paginate_queryset(filterset.qs, request)
+
+    serializer = SimpleMedicineListSerializer(
+        queryset, many=True, context={"request": request}
+    )
     return paginator.get_paginated_response({"medicines": serializer.data})
 
 
@@ -142,5 +167,5 @@ def get_all_pharmacies(request):
     paginator.page_size = 6
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
-    serializer = PharmacySerializer(queryset, many=True, context={"request":request})
+    serializer = PharmacySerializer(queryset, many=True, context={"request": request})
     return paginator.get_paginated_response({"pharmacy": serializer.data})
