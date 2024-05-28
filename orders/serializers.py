@@ -7,11 +7,11 @@ from accounts.models import User
 
 
 class CreditCardSerializer(serializers.ModelSerializer):
-    full_name = serializers.CharField(source="user.full_name")
+    full_name = serializers.CharField(source="user.full_name", read_only=True)
 
     class Meta:
         model = CreditCard
-        fields = ("id", "card_number", "full_name", "expiration_date", "cvv")
+        fields = ("id", "card_number", "full_name", "expiration_date", "card_type", "cvv")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
