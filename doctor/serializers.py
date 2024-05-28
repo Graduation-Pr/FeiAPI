@@ -152,3 +152,16 @@ class PatientMedicineCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         patient_medicine = PatientMedicine.objects.create(**validated_data)
         return patient_medicine
+
+
+
+
+class DoctorReviewsSerializer(serializers.ModelSerializer):
+    patient = serializers.SerializerMethodField()
+    class Meta:
+        model = DoctorBooking
+        fields = ['patient', 'review', "rating"]
+
+
+    def get_patient(self, obj):
+        return obj.patient.full_name

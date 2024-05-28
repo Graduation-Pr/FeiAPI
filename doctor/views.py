@@ -9,12 +9,12 @@ from .serializers import (
     DoctorListSerializer,
     DoctorPatientSerializer,
     DoctorReadBookingSerializer,
-    DoctorBookingCancelSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
     PatientMedicineCreateSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
     CreatePatientPlanSerializer,
+    DoctorReviewsSerializer
 )
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
@@ -102,8 +102,6 @@ def get_all_bookings(request):
 
     serializer = DoctorReadBookingSerializer(filtered_queryset, many=True)
     return Response(serializer.data)
-
-
 
 
 @api_view(["GET"])
@@ -250,3 +248,15 @@ def get_patient_medicine(request, pk):
     patient_medicine = get_object_or_404(PatientMedicine, pk=pk)
     serializer = PatientMedicineSerializer(patient_medicine)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_doctor_reviews(request):
+    doctor = request.user
+    if doctor.role != "DOCTOR":
+        return Response("you have to be a doctor to use this function!", status=status.HTTP_401_UNAUTHORIZED)
+    doctor_bookings = DoctorBooking.objects.filter(doctor=doctor, status="completed")
+    # print(doctor_bookings)
+    serializer = DoctorReviewsSerializer(doctor_bookings, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

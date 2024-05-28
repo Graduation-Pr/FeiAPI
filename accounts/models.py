@@ -46,6 +46,10 @@ class User(AbstractUser):
 
     birth_date = models.DateField(null=True, blank=True)
 
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
+
     def __str__(self):
         return self.username
 
