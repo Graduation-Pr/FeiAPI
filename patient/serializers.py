@@ -9,11 +9,18 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
     patient = serializers.CharField(read_only=True)
     payment_card = serializers.CharField(read_only=True)
 
-
     class Meta:
         model = DoctorBooking
-        fields = ["id", "doctor", "patient", "booking_date", "service", "payment_card", "status"]
-
+        fields = [
+            "id",
+            "doctor",
+            "patient",
+            "booking_date",
+            "service",
+            "payment_card",
+            "status",
+            "rating",
+        ]
 
     def create(self, validated_data):
         print("Context in Serializer:", self.context)
@@ -29,17 +36,14 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-
 class LabBookingSerializer(serializers.ModelSerializer):
     lab = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
     payment_card = serializers.CharField(read_only=True)
 
-
     class Meta:
         model = LabBooking
         fields = ["id", "lab", "patient", "booking_date", "service", "payment_card"]
-
 
     def create(self, validated_data):
         print("Context in Serializer:", self.context)
@@ -53,5 +57,3 @@ class LabBookingSerializer(serializers.ModelSerializer):
         validated_data["patient_id"] = patient_id
         validated_data["payment_card"] = card
         return super().create(validated_data)
-
-

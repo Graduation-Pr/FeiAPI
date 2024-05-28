@@ -18,6 +18,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from .models import PatientMedicine
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
 
 
 @api_view(["POST"])
@@ -145,7 +146,7 @@ def create_lab_booking(request, lab_id):
 def doctor_review(request, pk):
     if request.user.role != "PATIENT":
         return Response(
-            {"message": "you have to be a patient to make review"},
+            {"message": "You have to be a patient to make a review"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
@@ -156,25 +157,37 @@ def doctor_review(request, pk):
         doctor = User.objects.get(id=pk)
     except User.DoesNotExist:
         return Response(
-            {"message": "enter a valid doctor ID"}, status=status.HTTP_401_UNAUTHORIZED
+            {"message": "Enter a valid doctor ID"}, status=status.HTTP_404_NOT_FOUND
         )
 
     if doctor.role != "DOCTOR":
         return Response(
-            {"message": "enter a valid doctor ID"}, status=status.HTTP_401_UNAUTHORIZED
+            {"message": "Enter a valid doctor ID"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     booking = DoctorBooking.objects.filter(
-        patient=patient, doctor=doctor, is_completed=True
+        patient=patient, doctor=doctor, status="completed"
     ).last()
 
     if not booking:
         return Response(
             {
-                "message": "you don't have a booking with this doctor or you have not completed your booking"
+                "message": "You don't have a booking with this doctor or you have not completed your booking"
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    rating = data.get("rating")
+    if rating is not None:
+        booking.rating = rating
+
+        # Calculate average rating and update DoctorProfile
+        doctor_profile = doctor.doctor_profile
+        average_rating = DoctorBooking.objects.filter(
+            doctor=doctor, rating__isnull=False
+        ).aggregate(Avg("rating"))["rating__avg"]
+        doctor_profile.rating = average_rating
+        doctor_profile.save()
 
     booking.review = data.get("review", "")
     booking.save()

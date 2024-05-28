@@ -1,8 +1,10 @@
 from datetime import datetime
 from django.db import models
-from accounts.models import User
-from django.core.validators import MinLengthValidator, MaxLengthValidator
+
+# from accounts.models import User
 from orders.models import CreditCard
+from project import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 SERVICES = (
@@ -27,8 +29,12 @@ class DoctorBooking(models.Model):
         ("canceled", "Canceled"),
     ]
 
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient")
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor")
+    patient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="patient"
+    )
+    doctor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="doctor"
+    )
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     booking_date = models.DateTimeField()
     payment_card = models.ForeignKey(
@@ -36,6 +42,9 @@ class DoctorBooking(models.Model):
     )
     cancel_reason = models.CharField(max_length=200, null=True, blank=True)
     review = models.CharField(max_length=500, null=True, blank=True)
+    rating = models.PositiveIntegerField(
+        null=True, blank=True,default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="upcoming")
 
     def __str__(self):
@@ -44,10 +53,10 @@ class DoctorBooking(models.Model):
 
 class PatientPlan(models.Model):
     doctor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="doctor_plan"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="doctor_plan"
     )
     patient = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="patient_plan"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="patient_plan"
     )
 
     def __str__(self):

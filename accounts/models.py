@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.apps import apps
 
 
 class User(AbstractUser):
@@ -44,7 +45,7 @@ class User(AbstractUser):
     )
 
     birth_date = models.DateField(null=True, blank=True)
-    
+
     def __str__(self):
         return self.username
 
@@ -53,16 +54,17 @@ class PatientProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="patient_profile"
     )
-    
 
     def __str__(self):
         return f"{self.user.username}'s Patient Profile"
 
+
 SPECIALIZATION = (
-    ("CARDIOLOGIST","cardiologist"),
-    ("Neurologist","Neurologist"),
-    ("Pulmonologist","Pulmonologist")
+    ("CARDIOLOGIST", "cardiologist"),
+    ("Neurologist", "Neurologist"),
+    ("Pulmonologist", "Pulmonologist"),
 )
+
 
 class DoctorProfile(models.Model):
     user = models.OneToOneField(
@@ -76,6 +78,14 @@ class DoctorProfile(models.Model):
     experience = models.PositiveIntegerField(null=True, blank=True)
     doctor_patients = models.PositiveBigIntegerField(null=True, blank=True)
     specialization = models.CharField(max_length=50, choices=SPECIALIZATION)
+
+    def update_average_rating(self):
+        DoctorBooking = apps.get_model("doctor", "DoctorBooking")
+        average_rating = DoctorBooking.objects.filter(
+            doctor=self.user, rating__isnull=False
+        ).aggregate(models.Avg("rating"))["rating__avg"]
+        self.rating = average_rating
+        self.save()
 
     def __str__(self):
         return f"{self.user.username}'s Doctor Profile"
