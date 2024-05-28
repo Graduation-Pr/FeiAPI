@@ -12,7 +12,6 @@ class CreditCardSerializer(serializers.ModelSerializer):
         fields = ("id", "card_number", "expiration_date", "cvv")
 
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer()
 

@@ -27,7 +27,7 @@ def get_all_labs(request):
     paginator.page_size = 6
     queryset = paginator.paginate_queryset(filterset.qs, request)
 
-    serializer = LaboratorySerializer(queryset, many=True)
+    serializer = LaboratorySerializer(queryset, many=True, context={"request":request})
     return Response({"labs": serializer.data})
 
 

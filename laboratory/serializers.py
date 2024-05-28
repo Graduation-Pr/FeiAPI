@@ -3,9 +3,17 @@ from .models import LabBooking, Laboratory, LabService
 
 
 class LaboratorySerializer(serializers.ModelSerializer):
+    # image = serializers.SerializerMethodField()
+
     class Meta:
         model = Laboratory
         fields = ("id", "name", "image", "rate", "city")
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class LaboratoryDetailSerializer(serializers.ModelSerializer):
@@ -27,6 +35,12 @@ class LaboratoryDetailSerializer(serializers.ModelSerializer):
     def get_lab_patients(self, obj):
         bookings = LabBooking.objects.filter(id=obj.id).count()
         return bookings
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class ServiceSerializer(serializers.ModelSerializer):

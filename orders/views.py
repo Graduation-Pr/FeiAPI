@@ -16,15 +16,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 
 
-
-
 class OrderViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
     @action(detail=True, methods=["POST"])
     def pay(self, request, pk):
-        order = self.get_object()  
+        order = self.get_object()
         data = request.data
         user = request.user
         try:
@@ -50,8 +48,6 @@ class OrderViewSet(ModelViewSet):
         serializer = OrderSerializer(order)
         data = {"Message": "Payment Was Successeful", "data": serializer.data}
         return Response(data)
-
-
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -88,11 +84,11 @@ def list_credit_card(request):
 @permission_classes([IsAuthenticated])
 def credit_card_detail(request, pk):
     user = request.user
-    
+
     try:
         credit_card = CreditCard.objects.get(pk=pk)
     except CreditCard.DoesNotExist:
-        return Response({"message":"card not found"},status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "card not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if credit_card.user == request.user:
         if request.method == "GET":

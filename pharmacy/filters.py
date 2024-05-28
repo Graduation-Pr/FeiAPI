@@ -33,7 +33,8 @@ class DeviceFilter(django_filters.FilterSet):
 
 class PharmacyFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_expr="icontains")
+    rating = django_filters.NumberFilter(field_name="rating", lookup_expr="gte")
 
     class Meta:
         model = Pharmacy
-        fields = ["name"]
+        fields = ["name", "rating"]
