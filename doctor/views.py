@@ -291,4 +291,19 @@ def doctor_comment(request, pk):
         serializer.save(booking=booking)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def list_doctor_comments(request, pk):
+    doctor = request.user
+
+    try:
+        patient = User.objects.get(id=pk)
+    except User.DoesNotExist:
+        return Response({"error": "patient not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    comments = DoctorComment.objects.filter(booking__doctor=doctor, booking__patient=patient)
+    serializer = DoctorCommentSerializer(comments, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)    
