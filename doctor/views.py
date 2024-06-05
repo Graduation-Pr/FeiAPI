@@ -14,11 +14,11 @@ from .serializers import (
     PatientMedicineSerializer,
     PatientPlanSerializer,
     CreatePatientPlanSerializer,
-    DoctorReviewsSerializer
+    DoctorReviewsSerializer, DoctorCommentSerializer
 )
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
-from .models import DoctorBooking, PatientPlan
+from .models import DoctorBooking, DoctorComment, PatientPlan
 from rest_framework import filters
 
 # from .filters import DoctorBookingFilter
@@ -260,3 +260,35 @@ def get_doctor_reviews(request):
     # print(doctor_bookings)
     serializer = DoctorReviewsSerializer(doctor_bookings, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def doctor_comment(request, pk):
+    data = request.data
+    doctor = request.user
+    
+    if doctor.role != "DOCTOR":
+        return Response({"message:":"you don't have permission"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        # Try to get the booking by ID
+        booking = DoctorBooking.objects.get(id=pk)
+    except DoctorBooking.DoesNotExist:
+        # If booking not found by ID, try to get the patient by ID
+        try:
+            patient = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response({"error": "patient not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # If patient found, get the last completed booking for that patient with the current doctor
+        booking = DoctorBooking.objects.filter(doctor=doctor, patient=patient, status="completed").last()
+        if not booking:
+            return Response({"error": "booking not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+    serializer = DoctorCommentSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save(booking=booking)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

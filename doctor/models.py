@@ -22,6 +22,14 @@ class Service(models.Model):
         return f"{self.service}"
 
 
+class DoctorComment(models.Model):
+    text = models.CharField(max_length=200)
+    booking = models.ForeignKey("DoctorBooking", on_delete=models.CASCADE, related_name="doctor_comment") 
+    
+    def __str__(self):
+        return f"Dr {self.booking.doctor.username}'s comment for {self.booking.patient.username}"
+    
+    
 class DoctorBooking(models.Model):
     STATUS_CHOICES = [
         ("upcoming", "Upcoming"),

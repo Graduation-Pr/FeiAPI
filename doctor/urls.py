@@ -12,6 +12,7 @@ from .views import (
     create_patient_medicine,
     get_patient_medicine,
     get_doctor_reviews,
+    doctor_comment,
 )
 
 urlpatterns = [
@@ -33,4 +34,5 @@ urlpatterns = [
     path(
         "patient_medicine/<int:pk>/", get_patient_medicine, name="get_patient_medicine"
     ),
+    path("comment/<int:pk>/", doctor_comment)
 ]

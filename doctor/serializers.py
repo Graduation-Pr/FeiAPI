@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import DoctorProfile, User
 from accounts.serializers import SimpleUserSerializer
-from .models import DoctorBooking, Service, PatientPlan
+from .models import DoctorBooking, Service, PatientPlan, DoctorComment
 from patient.models import PatientMedicine
 from pharmacy.serializers import SimpleMedicineSerializer
 
@@ -165,3 +165,16 @@ class DoctorReviewsSerializer(serializers.ModelSerializer):
 
     def get_patient(self, obj):
         return obj.patient.full_name
+    
+    
+class DoctorCommentSerializer(serializers.ModelSerializer):
+    booking = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = DoctorComment
+        fields = ("text", "booking")
+
+    def create(self, validated_data):
+        return DoctorComment.objects.create( **validated_data)
+    
+        

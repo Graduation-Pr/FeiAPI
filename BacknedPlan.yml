@@ -90,7 +90,7 @@ Stage5: Bookings (done)
         - cancel[reason, reschedual]
         - patients in labs app(get the number of patients through the number of lab bookings)
 
-Stage6: Medical Profile
+Stage6: Medical Profile (++++)
     patient:
         - comment
         - lab result
@@ -113,7 +113,7 @@ Stage6: Plans (done)
             - take medicine
             - quantity 
 
-    - create a patient_plan once booking with a doctor
+    - create a patient_plan once booking with a doctor  (++++)
 
 Stage7: Patients App
     - list doctor-related patients (done)
@@ -127,8 +127,8 @@ Stage9: Payment
     - labs payment(done)
     - doctor-payment (done)
     - return cart detail based on user token(done)
-    - cvv
-    - add amount to the card
+    - cvv  (++++)
+    - add amount to the card  (++++)
 
 
 
@@ -146,20 +146,20 @@ Stage10: Chats
         
         - message_send
 
+Stage(extra work):
+	- check on all list functions -> pagination 
 
-	- check on all list functions -> pagination
-    - return 
 
 Stage11: AI integration
 
-Stage12: Admin Customizing
+Stage12: Admin Customizing 
+    - Add project logo to admin
 
 Stage13: Code Refactoring
     - define sechma for swagger
     - write comments
     - remove dupliactes
 
-Stage14: Dockerzing
+Stage14: Dockerzing redis: (cashing)
 
-
-Stage15: DB-filling
+Stage15: DB-filling 
