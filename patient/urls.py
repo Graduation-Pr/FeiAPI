@@ -9,6 +9,7 @@ from .views import (
     take_medicine,
     get_doctor_bookings,
     get_lab_bookings,
+    list_doctor_tests
 )
 
 urlpatterns = [
@@ -25,4 +26,5 @@ urlpatterns = [
     path("doctor_bookings/", get_doctor_bookings, name="booking"),
     path("lab_bookings/", get_lab_bookings, name="booking"),
     path("doctor_bookings/<int:pk>/cancel/", cancel_booking, name="cancel-doctor"),
+    path("doctor_tests/<int:pk>/", list_doctor_tests)
 ]

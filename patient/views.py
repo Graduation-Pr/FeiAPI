@@ -5,6 +5,7 @@ from doctor.serializers import (
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
+    TestSerializer,
 )
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
@@ -17,7 +18,7 @@ from rest_framework import status
 from orders.models import CreditCard
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
-from .models import PatientMedicine
+from .models import PatientMedicine, Test
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
 
@@ -317,3 +318,25 @@ def cancel_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
+        
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_doctor_tests(request, pk):
+    patient = request.user
+    try:
+        doctor = User.objects.get(id=pk)
+    except User.DoesNotExist:
+        return Response({"message": "Patient not found"}, status=404)
+
+    if doctor.role != "DOCTOR" or patient.role != "PATIENT":
+        return Response({"message": "You don't have permission"}, status=403)
+
+    bookings = DoctorBooking.objects.filter(patient=patient, doctor=doctor, status="completed")
+    print(bookings)
+    tests = Test.objects.filter(booking__in=bookings)
+    serializer = TestSerializer(tests, many=True)
+    return Response(serializer.data, status=200) 
+
+
+    

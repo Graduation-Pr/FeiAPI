@@ -15,7 +15,8 @@ from .views import (
     doctor_comment,
     list_doctor_comments,
     add_question,
-    create_test
+    create_test, 
+    list_patient_tests
 )
 
 urlpatterns = [
@@ -41,5 +42,6 @@ urlpatterns = [
     path('comments/<int:pk>/', list_doctor_comments, name='doctor_comments'),
     path("question/<int:pk>/", add_question),
     path("test/<int:pk>/", create_test),
+    path("tests/<int:pk>/", list_patient_tests),
     
 ]

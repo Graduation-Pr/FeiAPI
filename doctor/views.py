@@ -342,3 +342,24 @@ def create_test(request, pk):
     serializer = TestSerializer(test)
     return Response(serializer.data)
 
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def list_patient_tests(request, pk):
+    doctor = request.user
+    try:
+        patient = User.objects.get(id=pk)
+    except User.DoesNotExist:
+        return Response({"message": "Patient not found"}, status=404)
+
+    if doctor.role != "DOCTOR" or patient.role != "PATIENT":
+        return Response({"message": "You don't have permission"}, status=403)
+
+    bookings = DoctorBooking.objects.filter(patient=patient, doctor=doctor, status="completed")
+    tests = Test.objects.filter(booking__in=bookings)
+    serializer = TestSerializer(tests, many=True)
+    return Response(serializer.data, status=200) 
+
+
+    
+
