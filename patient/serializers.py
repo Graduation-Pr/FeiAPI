@@ -4,6 +4,7 @@ from laboratory.models import LabBooking
 from orders.models import CreditCard
 
 
+
 class DoctorBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True, source="doctor.full_name")
     patient = serializers.CharField(read_only=True, source="patient.full_name")
@@ -74,3 +75,5 @@ class LabBookingSerializer(serializers.ModelSerializer):
 
     def get_service_price(self, obj):
         return obj.service.price
+    
+

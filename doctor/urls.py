@@ -13,8 +13,9 @@ from .views import (
     get_patient_medicine,
     get_doctor_reviews,
     doctor_comment,
-    list_doctor_comments
-    
+    list_doctor_comments,
+    add_question,
+    create_test
 )
 
 urlpatterns = [
@@ -38,5 +39,7 @@ urlpatterns = [
     ),
     path("comment/<int:pk>/", doctor_comment),
     path('comments/<int:pk>/', list_doctor_comments, name='doctor_comments'),
+    path("question/<int:pk>/", add_question),
+    path("test/<int:pk>/", create_test),
     
 ]

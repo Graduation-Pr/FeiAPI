@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.models import DoctorProfile, User
 from accounts.serializers import SimpleUserSerializer
 from .models import DoctorBooking, Service, PatientPlan, DoctorComment
-from patient.models import PatientMedicine
+from patient.models import PatientMedicine, Test, Question
 from pharmacy.serializers import SimpleMedicineSerializer
 
 
@@ -176,5 +176,23 @@ class DoctorCommentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return DoctorComment.objects.create( **validated_data)
+    
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    answer= serializers.CharField(read_only=True)
+    test= serializers.CharField(read_only=True)
+    class Meta:
+        model = Question
+        fields = ['id', 'text', 'answer', 'test']
+        
+
+class TestSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True, read_only=True)
+    date = serializers.CharField(read_only=True)
+    class Meta:
+        model = Test
+        fields = ['id', 'date', 'booking', 'questions']
+
     
         

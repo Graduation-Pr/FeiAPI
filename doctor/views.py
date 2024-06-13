@@ -2,7 +2,7 @@ from accounts.models import DoctorProfile, User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 
-from patient.models import PatientMedicine
+from patient.models import PatientMedicine, Test, Question
 from .filters import DoctorFilter, DoctorBookingFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
@@ -14,7 +14,10 @@ from .serializers import (
     PatientMedicineSerializer,
     PatientPlanSerializer,
     CreatePatientPlanSerializer,
-    DoctorReviewsSerializer, DoctorCommentSerializer
+    DoctorReviewsSerializer,
+    DoctorCommentSerializer,
+    QuestionSerializer,
+    TestSerializer,
 )
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
@@ -298,7 +301,6 @@ def doctor_comment(request, pk):
 @permission_classes([permissions.IsAuthenticated])
 def list_doctor_comments(request, pk):
     doctor = request.user
-
     try:
         patient = User.objects.get(id=pk)
     except User.DoesNotExist:
@@ -307,3 +309,36 @@ def list_doctor_comments(request, pk):
     comments = DoctorComment.objects.filter(booking__doctor=doctor, booking__patient=patient)
     serializer = DoctorCommentSerializer(comments, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)    
+
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def add_question(request, pk):
+    try:
+        test = Test.objects.get(id=pk)
+    except Test.DoesNotExist:
+        return Response({'error': 'Test not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = QuestionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(test=test)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def create_test(request, pk):
+    doctor = request.user    
+    if doctor.role != "DOCTOR":
+        return Response({"message:":"you don't have permission"}, status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        booking = DoctorBooking.objects.get(id=pk)
+    except DoctorBooking.DoesNotExist:
+        return Response({"message:":"booking not found"}, 
+                        status=status.HTTP_404_NOT_FOUND)
+    test = Test.objects.create(booking=booking)
+    serializer = TestSerializer(test)
+    return Response(serializer.data)
+

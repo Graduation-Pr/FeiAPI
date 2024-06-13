@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.db import models
 from pharmacy.models import Medicine
-from doctor.models import PatientPlan
+from doctor.models import DoctorBooking, PatientPlan
 from django.core.exceptions import ValidationError
 
 
@@ -47,3 +47,20 @@ class PatientMedicine(models.Model):
 
     def __str__(self):
         return f"{self.medicine.name} for {self.dose} times a day"
+    
+    
+class Test(models.Model):
+    date = models.DateField(auto_now_add=True)
+    booking = models.ForeignKey(DoctorBooking, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"Dr {self.booking.doctor.username}'s test for {self.booking.patient.username} at {self.date}"
+    
+class Question(models.Model):
+    text = models.CharField(max_length=200)
+    answer = models.BooleanField(null=True, blank=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.text
+    

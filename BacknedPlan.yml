@@ -146,9 +146,6 @@ Stage10: Chats
         
         - message_send
 
-Stage(extra work):
-	- check on all list functions -> pagination 
-
 
 Stage11: AI integration
 
@@ -163,3 +160,14 @@ Stage13: Code Refactoring
 Stage14: Dockerzing redis: (cashing)
 
 Stage15: DB-filling 
+
+Stage(extra work):
+	- check on all list functions -> pagination 
+
+	- check on the booking response data (price)
+	
+	- return the card_image based on the card type(3)
+	
+	- list favroite products
+	
+	- doctor detail return full image
