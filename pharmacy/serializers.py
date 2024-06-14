@@ -94,9 +94,14 @@ class SimpleProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "price",
+            "image",
+            "price",         
         ]
-
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer()
@@ -114,6 +119,7 @@ class CartSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     items = CartItemSerializer(many=True, read_only=True)
     grand_total = serializers.SerializerMethodField(method_name="main_total")
+    
 
     class Meta:
         model = Cart

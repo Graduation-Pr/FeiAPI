@@ -108,7 +108,7 @@ class DetailDevice(generics.RetrieveAPIView):
 def cart_detail(request):
     try:
         cart = Cart.objects.get(user=request.user)
-        serializer = CartSerializer(cart)
+        serializer = CartSerializer(cart, context={"request":request})
         return Response(serializer.data)
     except Cart.DoesNotExist:
         return Response({"message": "Cart not found"}, status=status.HTTP_404_NOT_FOUND)
