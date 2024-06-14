@@ -339,4 +339,20 @@ def list_doctor_tests(request, pk):
     return Response(serializer.data, status=200) 
 
 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_doctor_question(request, pk):
+    patient = request.user
+    if patient.role != "PATIENT":
+        return Response({"message": "You don't have permission"}, status=403)
+    test = Test.objects.get(id=pk)
+    if test.booking.patient != patient:
+            return Response({"message": "You don't have permission"}, status=403)
+    serializer = TestSerializer(test)
+    return Response(serializer.data)
+
+    
+
+
     

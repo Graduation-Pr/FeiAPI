@@ -95,7 +95,7 @@ Stage6: Medical Profile (++++)
         - comment(list comment for patient)
         - lab result
         - prescriptions
-        - tests
+        - tests (listing questions and the answer)
     
         
 
@@ -170,4 +170,8 @@ Stage(extra work):
 	
 	- list favroite products
 	
-	- doctor detail return full image
+	- doctor detail return full image
+
+	- return products image in cart
+	
+	- fix doctor patinets

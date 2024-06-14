@@ -51,7 +51,7 @@ class PatientMedicine(models.Model):
     
 class Test(models.Model):
     date = models.DateField(auto_now_add=True)
-    booking = models.ForeignKey(DoctorBooking, on_delete=models.CASCADE)
+    booking = models.ForeignKey(DoctorBooking, related_name="test_booking", on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Dr {self.booking.doctor.username}'s test for {self.booking.patient.username} at {self.date}"
@@ -59,7 +59,7 @@ class Test(models.Model):
 class Question(models.Model):
     text = models.CharField(max_length=200)
     answer = models.BooleanField(null=True, blank=True)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, related_name='questions', on_delete=models.CASCADE)
     
     def __str__(self):
         return self.text
