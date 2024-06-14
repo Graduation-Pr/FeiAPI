@@ -5,6 +5,7 @@ from doctor.serializers import (
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
+    QuestionSerializer,
     TestSerializer,
 )
 from laboratory.filters import LabBookingFilter
@@ -18,7 +19,7 @@ from rest_framework import status
 from orders.models import CreditCard
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
-from .models import PatientMedicine, Test
+from .models import PatientMedicine, Question, Test
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
 
@@ -352,6 +353,23 @@ def list_doctor_question(request, pk):
     serializer = TestSerializer(test)
     return Response(serializer.data)
 
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def question_answer(request,pk):
+    patient = request.user
+    data = request.data
+    if patient.role != "PATIENT":
+        return Response({"message": "You don't have permission"}, status=403)
+    question = Question.objects.get(id=pk)
+    if question.test.booking.patient != patient:
+            return Response({"message": "You don't have permission"}, status=403)
+    answer = data["answer"]
+    question.answer = answer
+    question.save()
+    serializer = QuestionSerializer(question)
+    return Response(serializer.data)
+    
     
 
 

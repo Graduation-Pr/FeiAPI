@@ -10,7 +10,8 @@ from .views import (
     get_doctor_bookings,
     get_lab_bookings,
     list_doctor_tests,
-    list_doctor_question
+    list_doctor_question,
+    question_answer
 )
 
 urlpatterns = [
@@ -28,5 +29,6 @@ urlpatterns = [
     path("lab_bookings/", get_lab_bookings, name="booking"),
     path("doctor_bookings/<int:pk>/cancel/", cancel_booking, name="cancel-doctor"),
     path("doctor_tests/<int:pk>/", list_doctor_tests),
-    path("doctor_questions/<int:pk>/", list_doctor_question)
+    path("doctor_questions/<int:pk>/", list_doctor_question),
+    path("question_answer/<int:pk>/", question_answer)
 ]
