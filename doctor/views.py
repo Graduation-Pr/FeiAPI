@@ -79,7 +79,7 @@ def doctor_patients(request):
     doctor = request.user
 
     if doctor.role == "DOCTOR":
-        bookings = DoctorBooking.objects.filter(doctor=doctor, is_cancelled=False)
+        bookings = DoctorBooking.objects.filter(doctor=doctor, status="completed")
         patients = set(booking.patient for booking in bookings)
 
         # Serialize the patients with context
