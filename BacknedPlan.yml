@@ -92,10 +92,10 @@ Stage5: Bookings (done)
 
 Stage6: Medical Profile (++++)
     patient:
-        - comment(list comment for patient)
+        - comment(done)
         - lab result
         - prescriptions
-        - tests (listing questions and the answer)
+        - tests (done)
     
         
 
@@ -170,7 +170,7 @@ Stage(extra work):
 	
 	- list favroite products
 	
-	- doctor detail return full image
+	- doctor detail return full image (done)
 
 	- return products image in cart
 	

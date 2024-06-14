@@ -217,6 +217,12 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "doctor_patients",
             "specialization",
         )
+        
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
     # def get_doctor_patients(self):
     #     doctor_patients = self.context["doctor_patients"]

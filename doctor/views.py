@@ -65,7 +65,7 @@ def doctor_detail(request, pk):
         doctor_profile.doctor_patients = doctor_bookings
         doctor_profile.save()
 
-        serializer = DoctorProfileSerializer(doctor_profile)
+        serializer = DoctorProfileSerializer(doctor_profile, context={"request":request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:
         return Response(
