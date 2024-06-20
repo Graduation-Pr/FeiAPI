@@ -47,6 +47,11 @@ class LabService(models.Model):
         return f"{self.service}"
 
 
+
+def lab_result_file_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/media/lab_result/<patient_id>/<filename>
+    return f'lab_result/{instance.patient.username}/{filename}'
+
 class LabBooking(models.Model):
     STATUS_CHOICES = [
         ("upcoming", "Upcoming"),
@@ -69,6 +74,7 @@ class LabBooking(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="upcoming")
 
     cancel_reason = models.CharField(max_length=200, null=True, blank=True)
+    lab_result = models.FileField(upload_to=lab_result_file_path, default='media/lab_result/lab_result1.pdf')
 
     def __str__(self):
         return f"{self.patient.username}'s booking with Lab {self.lab.name}"

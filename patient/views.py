@@ -10,7 +10,7 @@ from doctor.serializers import (
 )
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
-from laboratory.serializers import LabReadBookingSerializer
+from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
 from rest_framework.response import Response
 from accounts.models import User
@@ -371,6 +371,17 @@ def question_answer(request,pk):
     return Response(serializer.data)
     
     
-
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_lab_result(request):
+    patient = request.user
+    try:
+        lab_bookings = LabBooking.objects.filter(patient=patient)
+        serializer = LabResultSerializer(lab_bookings,context={"request":request}, many=True)
+    except Exception as e :
+        return Response({"errors:":e})
+    return Response(serializer.data, status=200)
+    
+    
 
     

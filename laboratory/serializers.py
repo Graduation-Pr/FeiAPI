@@ -88,3 +88,18 @@ class LabBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabBooking
         fields = "__all__"
+
+
+class LabResultSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    lab = serializers.CharField(read_only=True)
+    service = serializers.CharField()
+    class Meta:
+        model = LabBooking
+        fields = ("id", "lab", "service", "booking_date", "image")
+        
+
+    def get_image(self, obj):
+        request = self.context.get("request")       
+        return request.build_absolute_uri(obj.lab.image.url)
+    

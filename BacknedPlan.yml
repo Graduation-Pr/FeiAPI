@@ -93,7 +93,7 @@ Stage5: Bookings (done)
 Stage6: Medical Profile (++++)
     patient:
         - comment(done)
-        - lab result
+        - lab result (done)
         - prescriptions
         - tests (done)
     
