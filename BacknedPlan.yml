@@ -94,7 +94,7 @@ Stage6: Medical Profile (++++)
     patient:
         - comment(done)
         - lab result (done)
-        - prescriptions
+        - prescriptions 
         - tests (done)
     
         

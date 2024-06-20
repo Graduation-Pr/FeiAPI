@@ -2,7 +2,8 @@ from accounts.models import DoctorProfile, User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 
-from patient.models import PatientMedicine, Test, Question
+
+from patient.models import PatientMedicine, Test
 from .filters import DoctorFilter, DoctorBookingFilter
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
@@ -18,10 +19,11 @@ from .serializers import (
     DoctorCommentSerializer,
     QuestionSerializer,
     TestSerializer,
+    PrescriptionSerializer
 )
 from rest_framework.response import Response
 from accounts.serializers import DoctorProfileSerializer
-from .models import DoctorBooking, DoctorComment, PatientPlan
+from .models import DoctorBooking, DoctorComment, PatientPlan, Prescription
 from rest_framework import filters
 
 # from .filters import DoctorBookingFilter
@@ -373,5 +375,19 @@ def list_patient_question(request, pk):
     serializer = TestSerializer(test)
     return Response(serializer.data)
 
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def create_prescription(request, pk):
+    doctor = request.user
+    try:
+        patient_plan = PatientPlan.objects.get(id=pk)
+        prescription = Prescription.objects.create(patient_plan=patient_plan)
+        serializer = PrescriptionSerializer(prescription)
+    except Exception as e:
+        return Response({"errors:":e})
+    return Response(serializer.data, status=201)
     
+    
+
 

@@ -383,5 +383,3 @@ def list_lab_result(request):
     return Response(serializer.data, status=200)
     
     
-
-    

@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 
 # from accounts.models import User
+from accounts.models import User
 from orders.models import CreditCard
 from project import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -69,3 +70,12 @@ class PatientPlan(models.Model):
 
     def __str__(self):
         return f"{self.patient.username}'s plan with Dr {self.doctor.username}"
+
+
+class Prescription(models.Model):
+    patient_plan = models.ForeignKey(PatientPlan, on_delete=models.CASCADE, related_name="prescription_plan")
+    date = models.DateTimeField(auto_now_add=True)
+    
+    
+    def __str__(self):
+        return f"{self.patient_plan.patient.username}'s prescription with Dr {self.patient_plan.doctor.username}"

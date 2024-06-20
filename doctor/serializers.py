@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import DoctorProfile, User
 from accounts.serializers import SimpleUserSerializer
-from .models import DoctorBooking, Service, PatientPlan, DoctorComment
+from .models import DoctorBooking, Prescription, Service, PatientPlan, DoctorComment
 from patient.models import PatientMedicine, Test, Question
 from pharmacy.serializers import SimpleMedicineSerializer
 
@@ -122,6 +122,20 @@ class PatientMedicineSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
         )
+        
+
+class SimplePatientMedicineSerializer(serializers.ModelSerializer):
+    medicine = SimpleMedicineSerializer()
+
+    class Meta:
+        model = PatientMedicine
+        fields = (
+            "id",
+            "medicine",
+            "dose",
+            "quantity",
+        )
+
 
 
 class PatientPlanSerializer(serializers.ModelSerializer):
@@ -195,4 +209,17 @@ class TestSerializer(serializers.ModelSerializer):
         fields = ['id', 'date', 'booking', 'questions']
 
     
-        
+class PrescriptionSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(source="patient_plan.doctor.username")
+    specialization = serializers.CharField(source="patient_plan.doctor.doctor_profile.specialization")
+    doctor_phone_num = serializers.CharField(source="patient_plan.doctor.phone_number")
+    patient = serializers.CharField(source="patient_plan.patient.username")
+    patient_medicines = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Prescription
+        fields = ("id", "date", "doctor", "doctor_phone_num", "specialization", "patient", "patient_medicines")
+
+    def get_patient_medicines(self, obj):
+        patient_medicines = PatientMedicine.objects.filter(plan=obj.patient_plan)
+        return SimplePatientMedicineSerializer(patient_medicines, many=True).data
