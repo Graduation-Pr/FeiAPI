@@ -29,7 +29,6 @@ class MedicineSerializer(serializers.ModelSerializer):
             "price",
             "stock",
             "image",
-            "is_fav",
             "pill_dosage",
             "category",
             "subcategory",
@@ -44,7 +43,6 @@ class SimpleMedicineListSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "image",
-            "is_fav",
         )
 
     def get_image_url(self, obj):
@@ -64,7 +62,6 @@ class DeviceSerializer(serializers.ModelSerializer):
             "price",
             "stock",
             "image",
-            "is_fav",
             "category",
             "subcategory",
         )
@@ -78,7 +75,6 @@ class SimpleDeviceListSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "image",
-            "is_fav",
         )
 
     def get_image_url(self, obj):
