@@ -1,8 +1,8 @@
+from accounts.models import User
 from rest_framework import serializers
-from doctor.models import DoctorBooking
+from doctor.models import DoctorBooking, PatientPlan
 from laboratory.models import LabBooking
 from orders.models import CreditCard
-
 
 
 class DoctorBookingSerializer(serializers.ModelSerializer):
@@ -10,6 +10,7 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
     patient = serializers.CharField(read_only=True, source="patient.full_name")
     payment_card = serializers.CharField(read_only=True)
     service_price = serializers.SerializerMethodField()
+    patient_plan = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
@@ -23,6 +24,7 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
             "status",
             "service_price",
             "rating",
+            "patient_plan",
         ]
 
     def get_service_price(self, obj):
@@ -40,6 +42,14 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
         validated_data["patient_id"] = patient_id
         validated_data["payment_card"] = card
         return super().create(validated_data)
+
+    def get_patient_plan(self, obj):
+        patient_id = self.context["patient_id"]
+        doctor_id = self.context["doctor_id"]
+        patient = User.objects.get(id=patient_id)
+        doctor = User.objects.get(id=doctor_id)
+        patient_plan = PatientPlan.objects.create(doctor=doctor, patient=patient)
+        return patient_plan.id
 
 
 class LabBookingSerializer(serializers.ModelSerializer):
@@ -75,5 +85,3 @@ class LabBookingSerializer(serializers.ModelSerializer):
 
     def get_service_price(self, obj):
         return obj.service.price
-    
-

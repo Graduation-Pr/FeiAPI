@@ -13,7 +13,7 @@ from .views import (
     list_doctor_question,
     question_answer,
     list_lab_result,
-    list_prescriptions
+    list_prescriptions,
 )
 
 urlpatterns = [
@@ -34,5 +34,5 @@ urlpatterns = [
     path("doctor_questions/<int:pk>/", list_doctor_question),
     path("question_answer/<int:pk>/", question_answer),
     path("lab_result/", list_lab_result),
-    path("prescriptions/", list_prescriptions),
+    path("prescriptions/", list_prescriptions, name="patient_prescriptions"),
 ]
