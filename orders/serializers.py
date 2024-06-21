@@ -11,7 +11,13 @@ class CreditCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CreditCard
-        fields = ("id", "card_number", "full_name", "expiration_date", "card_type", "cvv")
+        fields = ("id", "card_number", "full_name", "expiration_date", "card_type", "card_image", "cvv")
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

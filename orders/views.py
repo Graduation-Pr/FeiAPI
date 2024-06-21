@@ -76,7 +76,9 @@ def list_credit_card(request):
     if request.method == "GET":
         user = request.user
         credit_cards = CreditCard.objects.filter(user=user)
-        serializer = CreditCardSerializer(credit_cards, many=True)
+        serializer = CreditCardSerializer(
+            credit_cards, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -109,7 +111,9 @@ def credit_card_detail(request, pk):
 def credit_card_create(request):
     user = request.user
     if request.method == "POST":
-        serializer = CreditCardSerializer(data=request.data)
+        serializer = CreditCardSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
             serializer.save(user=user)
             return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)

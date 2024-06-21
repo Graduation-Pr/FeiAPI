@@ -30,6 +30,7 @@ class CreditCard(models.Model):
         max_length=3, validators=[MinLengthValidator(3), MaxLengthValidator(3)]
     )
     card_type = models.CharField(max_length=16, choices=CARD_TYPE_CHOICES)
+    card_image = models.ImageField(upload_to="card_images/", blank=True, null=True)
 
     def __str__(self):
         return f"Card ending with {self.card_number[-4:]} for user {self.user}"
@@ -37,6 +38,16 @@ class CreditCard(models.Model):
     class Meta:
         verbose_name = "Credit Card"
         verbose_name_plural = "Credit Cards"
+
+    def save(self, *args, **kwargs):
+        if not self.card_image:
+            if self.card_type == self.VISA:
+                self.card_image.name = "card_images/v.png"
+            elif self.card_type == self.MASTER_CARD:
+                self.card_image.name = "card_images/ms.jpg"
+            elif self.card_type == self.AMERICAN_EXPRESS:
+                self.card_image.name = "card_images/am.jpeg"
+        super().save(*args, **kwargs)
 
 
 class Order(models.Model):
