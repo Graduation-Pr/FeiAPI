@@ -1,10 +1,11 @@
 from doctor.filters import DoctorBookingFilter
-from doctor.models import DoctorBooking, PatientPlan
+from doctor.models import DoctorBooking, PatientPlan, Prescription
 from doctor.serializers import (
     DoctorBookingCancelSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
+    PrescriptionSerializer,
     QuestionSerializer,
     TestSerializer,
 )
@@ -319,7 +320,7 @@ def cancel_booking(request, pk):
         return Response(
             {"errors": "Booking does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
-        
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -333,12 +334,13 @@ def list_doctor_tests(request, pk):
     if doctor.role != "DOCTOR" or patient.role != "PATIENT":
         return Response({"message": "You don't have permission"}, status=403)
 
-    bookings = DoctorBooking.objects.filter(patient=patient, doctor=doctor, status="completed")
+    bookings = DoctorBooking.objects.filter(
+        patient=patient, doctor=doctor, status="completed"
+    )
     print(bookings)
     tests = Test.objects.filter(booking__in=bookings)
     serializer = TestSerializer(tests, many=True)
-    return Response(serializer.data, status=200) 
-
+    return Response(serializer.data, status=200)
 
 
 @api_view(["GET"])
@@ -349,37 +351,52 @@ def list_doctor_question(request, pk):
         return Response({"message": "You don't have permission"}, status=403)
     test = Test.objects.get(id=pk)
     if test.booking.patient != patient:
-            return Response({"message": "You don't have permission"}, status=403)
+        return Response({"message": "You don't have permission"}, status=403)
     serializer = TestSerializer(test)
     return Response(serializer.data)
 
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
-def question_answer(request,pk):
+def question_answer(request, pk):
     patient = request.user
     data = request.data
     if patient.role != "PATIENT":
         return Response({"message": "You don't have permission"}, status=403)
     question = Question.objects.get(id=pk)
     if question.test.booking.patient != patient:
-            return Response({"message": "You don't have permission"}, status=403)
+        return Response({"message": "You don't have permission"}, status=403)
     answer = data["answer"]
     question.answer = answer
     question.save()
     serializer = QuestionSerializer(question)
     return Response(serializer.data)
-    
-    
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def list_lab_result(request):
     patient = request.user
     try:
         lab_bookings = LabBooking.objects.filter(patient=patient)
-        serializer = LabResultSerializer(lab_bookings,context={"request":request}, many=True)
-    except Exception as e :
-        return Response({"errors:":e})
+        serializer = LabResultSerializer(
+            lab_bookings, context={"request": request}, many=True
+        )
+    except Exception as e:
+        return Response({"errors:": e})
     return Response(serializer.data, status=200)
-    
-    
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_prescriptions(request):
+    patient = request.user
+    if patient.role != "PATIENT":
+        return Response("you have to be a patient to use this function", status=401)
+    try:
+        patient_plans = PatientPlan.objects.filter(patient=patient)
+        prescriptions = Prescription.objects.filter(patient_plan__in=patient_plans)
+        serializer = PrescriptionSerializer(prescriptions, many=True)
+    except Exception as e:
+        return Response({"errors": e})
+    return Response(serializer.data, status=200)
