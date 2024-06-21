@@ -14,6 +14,7 @@ from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
 from .serializers import DoctorBookingSerializer, LabBookingSerializer
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from accounts.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -339,8 +340,11 @@ def list_doctor_tests(request, pk):
     )
     print(bookings)
     tests = Test.objects.filter(booking__in=bookings)
-    serializer = TestSerializer(tests, many=True)
-    return Response(serializer.data, status=200)
+    paginator = PageNumberPagination()
+    paginator.page_size = 5
+    query_set = paginator.paginate_queryset(list(tests), request)
+    serializer = TestSerializer(query_set, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["GET"])
@@ -379,12 +383,16 @@ def list_lab_result(request):
     patient = request.user
     try:
         lab_bookings = LabBooking.objects.filter(patient=patient)
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        query_set = paginator.paginate_queryset(list(lab_bookings), request)
         serializer = LabResultSerializer(
-            lab_bookings, context={"request": request}, many=True
+            query_set, context={"request": request}, many=True
         )
     except Exception as e:
         return Response({"errors:": e})
-    return Response(serializer.data, status=200)
+    return paginator.get_paginated_response(serializer.data)
+
 
 
 @api_view(["GET"])
@@ -396,7 +404,10 @@ def list_prescriptions(request):
     try:
         patient_plans = PatientPlan.objects.filter(patient=patient)
         prescriptions = Prescription.objects.filter(patient_plan__in=patient_plans)
-        serializer = PrescriptionSerializer(prescriptions, many=True)
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        query_set = paginator.paginate_queryset(list(prescriptions), request)
+        serializer = PrescriptionSerializer(query_set, many=True)
     except Exception as e:
         return Response({"errors": e})
-    return Response(serializer.data, status=200)
+    return paginator.get_paginated_response(serializer.data)

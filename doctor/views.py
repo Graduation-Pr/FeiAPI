@@ -85,15 +85,17 @@ def doctor_patients(request):
     if doctor.role == "DOCTOR":
         bookings = DoctorBooking.objects.filter(doctor=doctor, status="completed")
         patients = set(booking.patient for booking in bookings)
-
-        # Serialize the patients with context
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        query_set = paginator.paginate_queryset(list(patients), request)
         serializer = DoctorPatientSerializer(
-            patients, many=True, context={"doctor": doctor}
+            query_set, many=True, context={"doctor": doctor}
         )
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializer.data)
     else:
         return Response({"detail": "User is not a doctor"}, status=403)
+
 
 
 @api_view(["GET"])
@@ -106,9 +108,12 @@ def get_all_bookings(request):
     filterset_class = DoctorBookingFilter
 
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
+    paginator = PageNumberPagination()
+    paginator.page_size = 5
+    query_set = paginator.paginate_queryset(filtered_queryset, request)
 
-    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True)
-    return Response(serializer.data)
+    serializer = DoctorReadBookingSerializer(query_set, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["GET"])
@@ -381,8 +386,11 @@ def list_patient_tests(request, pk):
         patient=patient, doctor=doctor, status="completed"
     )
     tests = Test.objects.filter(booking__in=bookings)
-    serializer = TestSerializer(tests, many=True)
-    return Response(serializer.data, status=200)
+    paginator = PageNumberPagination()
+    paginator.page_size = 5
+    query_set = paginator.paginate_queryset(list(tests), request)
+    serializer = TestSerializer(query_set, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["GET"])
@@ -394,6 +402,7 @@ def list_patient_question(request, pk):
     test = Test.objects.get(id=pk)
     if test.booking.doctor != doctor:
         return Response({"message": "You don't have permission"}, status=403)
+    
     serializer = TestSerializer(test)
     return Response(serializer.data)
 
@@ -413,6 +422,7 @@ def create_prescription(request, pk):
     return Response(serializer.data, status=201)
 
 
+
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def list_prescriptions(request, pk):
@@ -423,10 +433,13 @@ def list_prescriptions(request, pk):
         patient = User.objects.get(id=pk)
         patient_plans = PatientPlan.objects.filter(doctor=doctor, patient=patient)
         prescriptions = Prescription.objects.filter(patient_plan__in=patient_plans)
-        serializer = PrescriptionSerializer(prescriptions, many=True)
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        query_set = paginator.paginate_queryset(list(prescriptions), request)
+        serializer = PrescriptionSerializer(query_set, many=True)
     except Exception as e:
         return Response({"errors": e})
-    return Response(serializer.data, status=200)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["GET"])

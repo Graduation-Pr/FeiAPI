@@ -48,6 +48,7 @@ def get_all_products(request, pk):
     return paginator.get_paginated_response({"product": serializer.data})
 
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_devices(request, pk):
@@ -192,10 +193,13 @@ def list_fav_produts(request):
     user = request.user
     try:
         fav_products = FavProduct.objects.filter(user=user)
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        query_set = paginator.paginate_queryset(list(fav_products), request)
         serializer = FavProductSerializer(
-            fav_products, many=True, context={"request": request}
+            query_set, many=True, context={"request": request}
         )
     except Exception as e:
         return Response({"errros": e})
 
-    return Response(serializer.data)
+    return paginator.get_paginated_response(serializer.data)

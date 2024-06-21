@@ -156,15 +156,15 @@ Stage14: Dockerzing redis: (cashing)
 Stage15: DB-filling 
 
 Stage(extra work):
-	- check on all list functions -> pagination 
+	- check on all list functions -> pagination (done)
 
-	- check on the booking response data (price)
+	- check on the booking response data (price) (done)
 	
 	- return the card_image based on the card type(3)(done)
 
     - upload_images using base64(done)
 	
-	- list favroite products
+	- list favroite products (done)
 	
 	- doctor detail return full image (done)
 
