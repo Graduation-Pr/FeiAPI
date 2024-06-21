@@ -387,6 +387,28 @@ def create_prescription(request, pk):
     except Exception as e:
         return Response({"errors:":e})
     return Response(serializer.data, status=201)
+
+
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def list_prescriptions(request, pk):
+    doctor = request.user
+    if doctor.role != "DOCTOR":
+        return Response("you have to be a doctor to use this function", status=401)
+    try:
+        patient = User.objects.get(id=pk)
+        patient_plans = PatientPlan.objects.filter(doctor=doctor, patient=patient)
+        prescriptions = Prescription.objects.filter(patient_plan__in=patient_plans)
+        serializer = PrescriptionSerializer(prescriptions, many=True)
+    except Exception as e: 
+        return Response({"errors":e})
+    return Response(serializer.data, status=200)
+
+    
+
+
     
     
 
