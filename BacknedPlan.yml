@@ -161,6 +161,8 @@ Stage(extra work):
 	- check on the booking response data (price)
 	
 	- return the card_image based on the card type(3)
+
+    - upload_images using base64(done)
 	
 	- list favroite products
 	

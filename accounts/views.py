@@ -54,7 +54,7 @@ def update_user(request):
         user.set_password(password)
 
     user_serializer = UpdateUserSerializer(
-        instance=user, data=request.data, partial=True
+        instance=user, data=request.data, partial=True, context={"request": request}
     )
     if user_serializer.is_valid():
         user_serializer.save()
@@ -113,7 +113,7 @@ def forget_password(request):
     # body = "Your password reset link is : {link}".format(link=link)
     # send_mail("Paswword reset from Fie", body, "feiapi.grad@gamil.com", [data["email"]])
 
-    return Response({"details":token})
+    return Response({"details": token})
 
 
 @api_view(["POST"])
@@ -143,8 +143,12 @@ def reset_password(request, token):
 def user_info(request):
     if request.user.role == "DOCTOR":
         doctor_profile = DoctorProfile.objects.get(user=request.user)
-        serializer = DoctorProfileSerializer(doctor_profile)
+        serializer = DoctorProfileSerializer(
+            doctor_profile, context={"request": request}
+        )
     else:
         patient_profile = PatientProfile.objects.get(user=request.user)
-        serializer = PatientProfileSerializer(patient_profile)
+        serializer = PatientProfileSerializer(
+            patient_profile, context={"request": request}
+        )
     return Response(serializer.data)

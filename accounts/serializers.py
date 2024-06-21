@@ -7,6 +7,25 @@ from pharmacy.models import Cart
 from django.contrib.auth import authenticate
 
 
+import base64
+from django.core.files.base import ContentFile
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        # Check if this is a base64 string
+        if isinstance(data, str) and data.startswith("data:image"):
+            # base64 encoded image - decode it
+            format, imgstr = data.split(";base64,")
+            ext = format.split("/")[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f"temp.{ext}")
+        elif isinstance(data, str):
+            # base64 encoded string but without data:image prefix
+            imgstr = data
+            data = ContentFile(base64.b64decode(imgstr), name="temp.png")
+        return super().to_internal_value(data)
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         username = attrs.get(self.username_field)
@@ -54,6 +73,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     role = serializers.CharField(read_only=True, default=User.Role.PATIENT)
+    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -62,6 +82,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "image",
             "password",
             "confirm_password",
             "role",
@@ -95,6 +116,7 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     role = serializers.CharField(read_only=True, default=User.Role.DOCTOR)
+    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -103,6 +125,7 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "image",
             "password",
             "confirm_password",
             "role",
@@ -144,6 +167,8 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
@@ -153,10 +178,10 @@ class UserSerializer(serializers.ModelSerializer):
             "phone_number",
             "city",
             "government",
-            "image",
             "gender",
             "role",
             "birth_date",
+            "image_url",  # Add image_url to the fields
         )
 
     def get_image_url(self, obj):
@@ -171,6 +196,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(
         required=False
     )  # Allow phone number to be optional
+    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -179,6 +205,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "image",
             "phone_number",  # Include phone_number field in the serializer
             "role",
             "birth_date",
@@ -201,10 +228,15 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Phone number must be 10 digits.")
         return value
 
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    # doctor_patients = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorProfile
@@ -217,16 +249,12 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "doctor_patients",
             "specialization",
         )
-        
+
     def get_image_url(self, obj):
         request = self.context.get("request")
         if obj.image and hasattr(obj.image, "url"):
             return request.build_absolute_uri(obj.image.url)
         return None
-
-    # def get_doctor_patients(self):
-    #     doctor_patients = self.context["doctor_patients"]
-    #     return doctor_patients
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
@@ -234,7 +262,4 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PatientProfile
-        fields = (
-            "user",
-            # "birth_date",
-        )
+        fields = ("user",)
