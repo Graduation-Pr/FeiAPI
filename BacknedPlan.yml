@@ -90,7 +90,7 @@ Stage5: Bookings (done)
         - cancel[reason, reschedual]
         - patients in labs app(get the number of patients through the number of lab bookings)
 
-Stage6: Medical Profile (++++)
+Stage6: Medical Profile (done)
     patient:
         - comment(done)
         - lab result (done)

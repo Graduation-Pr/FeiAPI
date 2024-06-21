@@ -427,3 +427,14 @@ def list_prescriptions(request, pk):
     except Exception as e:
         return Response({"errors": e})
     return Response(serializer.data, status=200)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def prescription_details(request, pk):
+    try:
+        prescription = Prescription.objects.get(id=pk)
+        serializer = PrescriptionSerializer(prescription)
+    except Exception as e:
+        return Response({"errros": e})
+    return Response(serializer.data)
