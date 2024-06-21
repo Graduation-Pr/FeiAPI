@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Pharmacy, Product, Cart, CartItems, Medicine, Device
+from .models import FavProduct, Pharmacy, Product, Cart, CartItems, Medicine, Device
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -95,13 +95,15 @@ class SimpleProductSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "image",
-            "price",         
+            "price",
         ]
+
     def get_image_url(self, obj):
         request = self.context.get("request")
         if obj.image and hasattr(obj.image, "url"):
             return request.build_absolute_uri(obj.image.url)
         return None
+
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer()
@@ -119,7 +121,6 @@ class CartSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     items = CartItemSerializer(many=True, read_only=True)
     grand_total = serializers.SerializerMethodField(method_name="main_total")
-    
 
     class Meta:
         model = Cart
@@ -177,6 +178,20 @@ class PharmacySerializer(serializers.ModelSerializer):
     class Meta:
         model = Pharmacy
         fields = "__all__"
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
+
+class FavProductSerializer(serializers.ModelSerializer):
+    product = SimpleProductSerializer()
+
+    class Meta:
+        model = FavProduct
+        fields = ("id", "user", "product")
 
     def get_image_url(self, obj):
         request = self.context.get("request")

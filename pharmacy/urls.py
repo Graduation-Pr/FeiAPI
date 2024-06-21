@@ -8,7 +8,9 @@ from .views import (
     cart_detail,
     cart_item_detail,
     add_cart_item,
-    get_all_pharmacies
+    get_all_pharmacies,
+    add_fav_product,
+    list_fav_produts
 )
 
 
@@ -22,4 +24,6 @@ urlpatterns = [
     path("carts/", cart_detail),
     path("carts/items/<int:item_pk>/", cart_item_detail),
     path("carts/items/", add_cart_item),
+    path("products/fav/<int:pk>/", add_fav_product),
+    path("products/fav/", list_fav_produts),
 ]

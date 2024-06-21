@@ -1,10 +1,11 @@
 from rest_framework import generics
 from pharmacy.filters import PharmacyFilter, ProductFilter, DeviceFilter, MedicineFilter
-from .models import Cart, CartItems, Pharmacy, Product, Device, Medicine
+from .models import Cart, CartItems, FavProduct, Pharmacy, Product, Device, Medicine
 from .serializers import (
     AddCartItemSerializer,
     CartItemSerializer,
     CartSerializer,
+    FavProductSerializer,
     PharmacySerializer,
     ProductSerializer,
     SimpleDeviceListSerializer,
@@ -108,7 +109,7 @@ class DetailDevice(generics.RetrieveAPIView):
 def cart_detail(request):
     try:
         cart = Cart.objects.get(user=request.user)
-        serializer = CartSerializer(cart, context={"request":request})
+        serializer = CartSerializer(cart, context={"request": request})
         return Response(serializer.data)
     except Cart.DoesNotExist:
         return Response({"message": "Cart not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -170,3 +171,31 @@ def get_all_pharmacies(request):
 
     serializer = PharmacySerializer(queryset, many=True, context={"request": request})
     return paginator.get_paginated_response({"pharmacy": serializer.data})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_fav_product(request, pk):
+    user = request.user
+    try:
+        product = Product.objects.get(id=pk)
+        fav_product = FavProduct.objects.create(user=user, product=product)
+        serializer = FavProductSerializer(fav_product, context={"request": request})
+    except Exception as e:
+        return Response({"errros": e})
+    return Response(serializer.data, status=200)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_fav_produts(request):
+    user = request.user
+    try:
+        fav_products = FavProduct.objects.filter(user=user)
+        serializer = FavProductSerializer(
+            fav_products, many=True, context={"request": request}
+        )
+    except Exception as e:
+        return Response({"errros": e})
+
+    return Response(serializer.data)

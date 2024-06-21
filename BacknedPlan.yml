@@ -160,7 +160,7 @@ Stage(extra work):
 
 	- check on the booking response data (price)
 	
-	- return the card_image based on the card type(3)
+	- return the card_image based on the card type(3)(done)
 
     - upload_images using base64(done)
 	
