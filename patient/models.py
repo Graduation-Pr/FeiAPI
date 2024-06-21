@@ -50,6 +50,7 @@ class PatientMedicine(models.Model):
     
     
 class Test(models.Model):
+    name = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True)
     booking = models.ForeignKey(DoctorBooking, related_name="test_booking", on_delete=models.CASCADE)
     

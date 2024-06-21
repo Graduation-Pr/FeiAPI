@@ -343,7 +343,7 @@ def list_doctor_tests(request, pk):
     paginator = PageNumberPagination()
     paginator.page_size = 5
     query_set = paginator.paginate_queryset(list(tests), request)
-    serializer = TestSerializer(query_set, many=True)
+    serializer = TestSerializer(query_set, many=True, context={"request":request})
     return paginator.get_paginated_response(serializer.data)
 
 

@@ -204,10 +204,16 @@ class QuestionSerializer(serializers.ModelSerializer):
 class TestSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, read_only=True)
     date = serializers.CharField(read_only=True)
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Test
-        fields = ['id', 'date', 'booking', 'questions']
+        fields = ['id', 'date', 'booking', 'questions', 'image_url', 'name']
 
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.booking.patient.image and hasattr(obj.booking.patient.image, "url"):
+            return request.build_absolute_uri(obj.booking.patient.image.url)
+        return None
     
 class PrescriptionSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(source="patient_plan.doctor.username")
