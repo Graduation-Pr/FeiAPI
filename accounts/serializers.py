@@ -1,161 +1,145 @@
+# django imports
+from django.core.files.base import ContentFile
+from django.contrib.auth import authenticate
+# rest imports
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from doctor.models import DoctorBooking
+# python imports
+import base64
+# internal imports
 from .models import User, DoctorProfile, PatientProfile
 from pharmacy.models import Cart
-from django.contrib.auth import authenticate
-
-
-import base64
-from django.core.files.base import ContentFile
-
 
 class Base64ImageField(serializers.ImageField):
+    """
+    Custom serializer field to handle Base64 encoded images.
+    """
     def to_internal_value(self, data):
-        # Check if this is a base64 string
-        if isinstance(data, str) and data.startswith("data:image"):
-            # base64 encoded image - decode it
-            format, imgstr = data.split(";base64,")
-            ext = format.split("/")[-1]
+        if isinstance(data, str):
+            # Check if data is a Base64 string with a prefix
+            if data.startswith("data:image"):
+                format, imgstr = data.split(";base64,")
+                ext = format.split("/")[-1]
+            else:
+                imgstr = data
+                ext = "png"
+            # Decode Base64 string to an image file
             data = ContentFile(base64.b64decode(imgstr), name=f"temp.{ext}")
-        elif isinstance(data, str):
-            # base64 encoded string but without data:image prefix
-            imgstr = data
-            data = ContentFile(base64.b64decode(imgstr), name="temp.png")
         return super().to_internal_value(data)
 
-
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Custom token serializer to include additional user data in the token.
+    """
     def validate(self, attrs):
         username = attrs.get(self.username_field)
         password = attrs.get("password")
 
         # Check if the username exists
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
+        user = User.objects.filter(username=username).first()
+        if not user:
             raise serializers.ValidationError("This username is not registered.")
-
         # Authenticate the user
-        if user and authenticate(username=username, password=password):
-            data = super().validate(attrs)
-            cart_id = user.user_cart.id
-            data["username"] = user.username
-            data["email"] = user.email
-            data["first_name"] = user.first_name
-            data["last_name"] = user.last_name
-            data["role"] = user.role
-            data["cart_id"] = cart_id
-
-            return data
-        else:
+        if not authenticate(username=username, password=password):
             raise serializers.ValidationError("Incorrect password.")
+
+        # Get the standard token data
+        data = super().validate(attrs)
+        # Add custom user data to the response
+        user_info = {
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role,
+            "cart_id": user.user_cart.id
+        }
+        data.update(user_info)
+        return data
 
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token["username"] = user.username
-        token["email"] = user.email
-        token["first_name"] = user.first_name
-        token["last_name"] = user.last_name
-        token["role"] = user.role
-
+        # Add custom claims to the token
+        user_info = {
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role
+        }
         return token
 
-
-from rest_framework import serializers
-from .models import User
-
-
-class RegisterPatientSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Base serializer for user registration.
+    """
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
+    image = Base64ImageField(required=False, allow_null=True)
+
+    def validate_email(self, value):
+        # Ensure email is unique
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email address is already registered.")
+        return value
+
+    def validate(self, attrs):
+        # Ensure passwords match
+        if attrs["password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        return attrs
+
+    def create_user(self, validated_data, role):
+        # Remove confirm_password from validated data
+        validated_data.pop("confirm_password")
+        # Create the user and associated cart
+        user = User.objects.create_user(**validated_data)
+        Cart.objects.create(user=user)
+        # Assign role to the user
+        user.role = role
+        user.save()
+        return user
+
+class RegisterPatientSerializer(RegisterSerializer):
+    """
+    Serializer for patient registration.
+    """
     role = serializers.CharField(read_only=True, default=User.Role.PATIENT)
-    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
         fields = [
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "image",
-            "password",
-            "confirm_password",
-            "role",
-            "city",
-            "government",
-            "gender",
-            "phone_number",
+            "username", "email", "first_name", "last_name", "image",
+            "password", "confirm_password", "role", "city", "government",
+            "gender", "phone_number"
         ]
 
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                "This email address is already registered."
-            )
-        return value
-
-    def validate(self, attrs):
-        if attrs["password"] != attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords do not match.")
-        return attrs
-
     def create(self, validated_data):
-        validated_data.pop("confirm_password")
-        user = User.objects.create_user(**validated_data)
-        cart = Cart.objects.create(user=user)
-        return user
+        return self.create_user(validated_data, User.Role.PATIENT)
 
-
-class RegisterDoctorSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
-    email = serializers.EmailField()
+class RegisterDoctorSerializer(RegisterSerializer):
+    """
+    Serializer for doctor registration.
+    """
     role = serializers.CharField(read_only=True, default=User.Role.DOCTOR)
-    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
         fields = [
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "image",
-            "password",
-            "confirm_password",
-            "role",
-            "city",
-            "government",
-            "gender",
-            "phone_number",
+            "username", "email", "first_name", "last_name", "image",
+            "password", "confirm_password", "role", "city", "government",
+            "gender", "phone_number"
         ]
 
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                "This email address is already registered."
-            )
-        return value
-
-    def validate(self, attrs):
-        if attrs["password"] != attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords do not match.")
-        return attrs
-
     def create(self, validated_data):
-        validated_data.pop("confirm_password")
-        user = User.objects.create_user(**validated_data)
-        cart = Cart.objects.create(user=user)
-
-        return user
-
+        return self.create_user(validated_data, User.Role.DOCTOR)
 
 class SimpleUserSerializer(serializers.ModelSerializer):
+    """
+    Simple serializer for basic user information.
+    """
     name = serializers.SerializerMethodField()
 
     class Meta:
@@ -163,67 +147,53 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
     def get_name(self, obj):
+        # Concatenate first and last name
         return f"{obj.first_name} {obj.last_name}"
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for detailed user information.
+    """
     image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = (
-            "full_name",
-            "email",
-            "username",
-            "phone_number",
-            "city",
-            "government",
-            "gender",
-            "role",
-            "birth_date",
-            "image_url",  # Add image_url to the fields
-        )
-
+        fields = [
+            "full_name", "email", "username", "phone_number", "city",
+            "government", "gender", "role", "birth_date", "image_url"
+        ]
+        
     def get_image_url(self, obj):
         request = self.context.get("request")
-        if obj.image and hasattr(obj.image, "url"):
+        if request and obj.image and hasattr(obj.image, "url"):
             return request.build_absolute_uri(obj.image.url)
         return None
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user information.
+    """
     role = serializers.CharField(read_only=True)
-    phone_number = serializers.CharField(
-        required=False
-    )  # Allow phone number to be optional
+    phone_number = serializers.CharField(required=False)
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
         fields = [
-            "password",
-            "email",
-            "first_name",
-            "last_name",
-            "image",
-            "phone_number",  # Include phone_number field in the serializer
-            "role",
-            "birth_date",
-            "city",
-            "government",
+            "password", "email", "first_name", "last_name", "image",
+            "phone_number", "role", "birth_date", "city", "government"
         ]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         # Format birth_date as day-month-year
-        if instance.birth_date:
-            formatted_date = instance.birth_date.strftime("%d-%m-%Y")
-        else:
-            formatted_date = None
-        data["birth_date"] = formatted_date
+        data["birth_date"] = instance.birth_date.strftime("%d-%m-%Y") if instance.birth_date else None
         return data
 
     def validate_phone_number(self, value):
+        # Ensure phone number is exactly 10 digits
         if value and len(value) != 10:
             raise serializers.ValidationError("Phone number must be 10 digits.")
         return value
@@ -234,21 +204,18 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
 
-
 class DoctorProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for doctor profile information.
+    """
     user = UserSerializer(read_only=True)
 
     class Meta:
         model = DoctorProfile
-        fields = (
-            "user",
-            "bio",
-            "verified",
-            "rating",
-            "experience",
-            "doctor_patients",
-            "specialization",
-        )
+        fields = [
+            "user", "bio", "verified", "rating", "experience",
+            "doctor_patients", "specialization"
+        ]
 
     def get_image_url(self, obj):
         request = self.context.get("request")
@@ -256,8 +223,10 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
 
-
 class PatientProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for patient profile information.
+    """
     user = UserSerializer(read_only=True)
 
     class Meta:
