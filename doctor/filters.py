@@ -1,4 +1,6 @@
+# django imports
 from django_filters import rest_framework as filters
+# internal imports
 from accounts.models import DoctorProfile
 from .models import DoctorBooking
 
@@ -9,7 +11,6 @@ class DoctorFilter(filters.FilterSet):
     specialization = filters.CharFilter(
         field_name="specialization", lookup_expr="icontains"
     )
-
     class Meta:
         model = DoctorProfile
         fields = ["name", "rating", "specialization"]

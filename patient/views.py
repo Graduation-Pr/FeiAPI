@@ -8,6 +8,7 @@ from doctor.serializers import (
     PrescriptionSerializer,
     QuestionSerializer,
     TestSerializer,
+    SimplePatientPrescriptionSerializer
 )
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
@@ -407,7 +408,7 @@ def list_prescriptions(request):
         paginator = PageNumberPagination()
         paginator.page_size = 5
         query_set = paginator.paginate_queryset(list(prescriptions), request)
-        serializer = PrescriptionSerializer(query_set, many=True)
+        serializer = SimplePatientPrescriptionSerializer(query_set, many=True, context={"request":request})
     except Exception as e:
         return Response({"errors": e})
     return paginator.get_paginated_response(serializer.data)

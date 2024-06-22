@@ -171,3 +171,5 @@ Stage(extra work):
 	- return products image in cart (done)
 	
 	- fix doctor patinets(done)
+
+    - create simple prescription serializer for the list function (done)
