@@ -14,6 +14,7 @@ from .views import (
     question_answer,
     list_lab_result,
     list_prescriptions,
+    get_doctor_booking, 
 )
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     path("plans/<int:pk>/", get_patient_plan),
     path("take_medicine/<int:pk>/", take_medicine),
     path("doctor_bookings/", get_doctor_bookings, name="booking"),
+    path("doctor_booking/<int:pk>/", get_doctor_booking, name="booking"),
     path("lab_bookings/", get_lab_bookings, name="booking"),
     path("doctor_bookings/<int:pk>/cancel/", cancel_booking, name="cancel-doctor"),
     path("doctor_tests/<int:pk>/", list_doctor_tests),

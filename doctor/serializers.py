@@ -1,4 +1,5 @@
 # internal imports
+from orders.serializers import CreditCardSerializer
 from .models import DoctorBooking, Prescription, Service, PatientPlan, DoctorComment
 from patient.models import PatientMedicine, Test, Question
 from pharmacy.serializers import SimpleMedicineSerializer
@@ -43,7 +44,6 @@ class ServiceSerializer(serializers.ModelSerializer):
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(read_only=True)
     id = serializers.CharField(read_only=True)
-    patient = serializers.CharField(read_only=True)
     service = serializers.CharField(source='service.service')
     doctor_image = serializers.SerializerMethodField()
 
@@ -52,7 +52,6 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "doctor",
-            "patient",
             "service",
             "booking_date",
             "status",
@@ -65,6 +64,38 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
         if obj.doctor.image and hasattr(obj.doctor.image, "url"):
             return request.build_absolute_uri(obj.doctor.image.url)
         return None
+    
+
+
+class DoctorReadBookingDetailsSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    id = serializers.CharField(read_only=True)
+    service = serializers.CharField(source='service.service')
+    doctor_image = serializers.SerializerMethodField()
+    payment_card = serializers.CharField()
+    price = serializers.CharField(source="service.price")
+    
+
+    class Meta:
+        model = DoctorBooking
+        fields = (
+            "id",
+            "doctor",
+            "service",
+            "payment_card",
+            "booking_date",
+            "status",
+            "doctor_image",
+            "price"
+        )
+
+
+    def get_doctor_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None
+
 
 # Serializer for canceling a booking
 class DoctorBookingCancelSerializer(serializers.ModelSerializer):

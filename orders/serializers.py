@@ -18,6 +18,10 @@ class CreditCardSerializer(serializers.ModelSerializer):
         if obj.image and hasattr(obj.image, "url"):
             return request.build_absolute_uri(obj.image.url)
         return None
+    
+
+
+    
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

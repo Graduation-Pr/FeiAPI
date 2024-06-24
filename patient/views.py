@@ -2,6 +2,7 @@ from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan, Prescription
 from doctor.serializers import (
     DoctorBookingCancelSerializer,
+    DoctorReadBookingDetailsSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
@@ -272,6 +273,24 @@ def get_doctor_bookings(request):
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
 
     serializer = DoctorReadBookingSerializer(filtered_queryset, many=True, context={"request":request})
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_doctor_booking(request, pk):
+    try:
+        booking = DoctorBooking.objects.get(id=pk)
+        patient = request.user
+        if patient.role != 'PATIENT' or booking.patient != patient :
+            return Response({"errors":"you don't have access to this funciton"})
+    except Exception as e:
+        return Response({"errors":e})
+
+
+    # Applying filter if 'status' parameter is provided in the request
+
+    serializer = DoctorReadBookingDetailsSerializer(booking, context={"request":request})
     return Response(serializer.data)
 
 
