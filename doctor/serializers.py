@@ -42,36 +42,35 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 # Serializer for reading booking details
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
-    doctor = serializers.CharField(read_only=True)
-    id = serializers.CharField(read_only=True)
+    patient = serializers.CharField(read_only=True, source="patient.full_name")
     service = serializers.CharField(source='service.service')
-    doctor_image = serializers.SerializerMethodField()
+    patient_image = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
         fields = (
             "id",
-            "doctor",
+            "patient",
             "service",
             "booking_date",
             "status",
-            "doctor_image"
+            "patient_image"
         )
 
 
-    def get_doctor_image(self, obj):
+    def get_patient_image(self, obj):
         request = self.context.get("request")
-        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
-            return request.build_absolute_uri(obj.doctor.image.url)
+        if obj.patient.image and hasattr(obj.patient.image, "url"):
+            return request.build_absolute_uri(obj.patient.image.url)
         return None
     
 
 
 class DoctorReadBookingDetailsSerializer(serializers.ModelSerializer):
-    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    patient = serializers.CharField(read_only=True, source="patient.full_name")
     id = serializers.CharField(read_only=True)
     service = serializers.CharField(source='service.service')
-    doctor_image = serializers.SerializerMethodField()
+    patient_image = serializers.SerializerMethodField()
     payment_card = serializers.CharField()
     price = serializers.CharField(source="service.price")
     
@@ -80,20 +79,20 @@ class DoctorReadBookingDetailsSerializer(serializers.ModelSerializer):
         model = DoctorBooking
         fields = (
             "id",
-            "doctor",
+            "patient",
             "service",
             "payment_card",
             "booking_date",
             "status",
-            "doctor_image",
+            "patient_image",
             "price"
         )
 
 
-    def get_doctor_image(self, obj):
+    def get_patient_image(self, obj):
         request = self.context.get("request")
-        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
-            return request.build_absolute_uri(obj.doctor.image.url)
+        if obj.patient.image and hasattr(obj.patient.image, "url"):
+            return request.build_absolute_uri(obj.patient.image.url)
         return None
 
 

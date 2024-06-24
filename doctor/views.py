@@ -18,6 +18,7 @@ from accounts.models import DoctorProfile, User
 from .serializers import (
     DoctorListSerializer,
     DoctorPatientSerializer,
+    DoctorReadBookingDetailsSerializer,
     DoctorReadBookingSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
     PatientMedicineCreateSerializer,
@@ -126,7 +127,7 @@ def get_all_bookings(request):
     paginator = PageNumberPagination()
     paginator.page_size = 5
     query_set = paginator.paginate_queryset(filtered_queryset, request)
-    serializer = DoctorReadBookingSerializer(query_set, many=True)
+    serializer = DoctorReadBookingSerializer(query_set, many=True, context={"request":request})
     return paginator.get_paginated_response(serializer.data)
 
 @swagger_auto_schema(
@@ -147,7 +148,7 @@ def booking_detail(request, pk):
     try:
         booking = DoctorBooking.objects.get(id=pk)
         if booking.doctor == user or booking.patient == user:
-            serializer = DoctorReadBookingSerializer(booking)
+            serializer = DoctorReadBookingDetailsSerializer(booking, context={"request":request})
             return Response(serializer.data)
         else:
             return Response({"errors": "You do not have permission to view this booking."}, status=status.HTTP_403_FORBIDDEN)

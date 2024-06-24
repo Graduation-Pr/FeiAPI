@@ -2,11 +2,9 @@ from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan, Prescription
 from doctor.serializers import (
     DoctorBookingCancelSerializer,
-    DoctorReadBookingDetailsSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
-    PrescriptionSerializer,
     QuestionSerializer,
     TestSerializer,
     SimplePatientPrescriptionSerializer
@@ -14,7 +12,7 @@ from doctor.serializers import (
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
-from .serializers import DoctorBookingSerializer, LabBookingSerializer
+from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from accounts.models import User
@@ -272,7 +270,7 @@ def get_doctor_bookings(request):
 
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
 
-    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True, context={"request":request})
+    serializer = PatientReadBookingSerializer(filtered_queryset, many=True, context={"request":request})
     return Response(serializer.data)
 
 
@@ -290,7 +288,7 @@ def get_doctor_booking(request, pk):
 
     # Applying filter if 'status' parameter is provided in the request
 
-    serializer = DoctorReadBookingDetailsSerializer(booking, context={"request":request})
+    serializer = PatientReadBookingDetailsSerializer(booking, context={"request":request})
     return Response(serializer.data)
 
 

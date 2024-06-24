@@ -85,3 +85,60 @@ class LabBookingSerializer(serializers.ModelSerializer):
 
     def get_service_price(self, obj):
         return obj.service.price
+
+
+
+class PatientReadBookingSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    id = serializers.CharField(read_only=True)
+    service = serializers.CharField(source='service.service')
+    doctor_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DoctorBooking
+        fields = (
+            "id",
+            "doctor",
+            "service",
+            "booking_date",
+            "status",
+            "doctor_image"
+        )
+
+
+    def get_doctor_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None
+    
+
+
+class PatientReadBookingDetailsSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    id = serializers.CharField(read_only=True)
+    service = serializers.CharField(source='service.service')
+    doctor_image = serializers.SerializerMethodField()
+    payment_card = serializers.CharField()
+    price = serializers.CharField(source="service.price")
+    
+
+    class Meta:
+        model = DoctorBooking
+        fields = (
+            "id",
+            "doctor",
+            "service",
+            "payment_card",
+            "booking_date",
+            "status",
+            "doctor_image",
+            "price"
+        )
+
+
+    def get_doctor_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None
