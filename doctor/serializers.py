@@ -5,6 +5,7 @@ from patient.models import PatientMedicine, Test, Question
 from pharmacy.serializers import SimpleMedicineSerializer
 from accounts.serializers import SimpleUserSerializer
 from accounts.models import DoctorProfile, User
+
 # rest imports
 from rest_framework import serializers
 
@@ -34,46 +35,38 @@ class DoctorListSerializer(serializers.ModelSerializer):
     def get_doctor_id(self, obj):
         return obj.user.id
 
+
 # Serializer for Service model
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ("service", "price")
 
+
 # Serializer for reading booking details
 class DoctorReadBookingSerializer(serializers.ModelSerializer):
     patient = serializers.CharField(read_only=True, source="patient.full_name")
-    service = serializers.CharField(source='service.service')
+    service = serializers.CharField(source="service.service")
     patient_image = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
-        fields = (
-            "id",
-            "patient",
-            "service",
-            "booking_date",
-            "status",
-            "patient_image"
-        )
-
+        fields = ("id", "patient", "service", "booking_date", "status", "patient_image")
 
     def get_patient_image(self, obj):
         request = self.context.get("request")
         if obj.patient.image and hasattr(obj.patient.image, "url"):
             return request.build_absolute_uri(obj.patient.image.url)
         return None
-    
 
 
 class DoctorReadBookingDetailsSerializer(serializers.ModelSerializer):
     patient = serializers.CharField(read_only=True, source="patient.full_name")
     id = serializers.CharField(read_only=True)
-    service = serializers.CharField(source='service.service')
+    service = serializers.CharField(source="service.service")
     patient_image = serializers.SerializerMethodField()
     payment_card = serializers.CharField()
     price = serializers.CharField(source="service.price")
-    
 
     class Meta:
         model = DoctorBooking
@@ -85,9 +78,8 @@ class DoctorReadBookingDetailsSerializer(serializers.ModelSerializer):
             "booking_date",
             "status",
             "patient_image",
-            "price"
+            "price",
         )
-
 
     def get_patient_image(self, obj):
         request = self.context.get("request")
@@ -108,6 +100,7 @@ class DoctorBookingCancelSerializer(serializers.ModelSerializer):
         model = DoctorBooking
         fields = "__all__"
 
+
 # Serializer for rescheduling and completing a booking
 class DoctorBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
     booking = DoctorReadBookingSerializer(read_only=True)
@@ -119,12 +112,14 @@ class DoctorBookingReschdualAndCompleteSerializer(serializers.ModelSerializer):
         model = DoctorBooking
         fields = "__all__"
 
+
 # Serializer for patient details related to a specific doctor
 class DoctorPatientSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
     booking_id = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ("id", "image_url", "location", "full_name", "booking_id")
@@ -147,6 +142,7 @@ class DoctorPatientSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
 
+
 # Serializer for patient medicine details
 class PatientMedicineSerializer(serializers.ModelSerializer):
     medicine = SimpleMedicineSerializer()
@@ -165,6 +161,7 @@ class PatientMedicineSerializer(serializers.ModelSerializer):
             "end_date",
         )
 
+
 # Simplified serializer for patient medicine details
 class SimplePatientMedicineSerializer(serializers.ModelSerializer):
     medicine = SimpleMedicineSerializer()
@@ -178,7 +175,30 @@ class SimplePatientMedicineSerializer(serializers.ModelSerializer):
             "quantity",
         )
 
+
 # Serializer for patient plan details
+class DoctorPlanSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    sepcializtion = serializers.CharField(
+        read_only=True, source="doctor.doctor_profile.specialization"
+    )
+    rating = serializers.CharField(
+        read_only=True, source="doctor.doctor_profile.rating"
+    )
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientPlan
+        fields = ("id", "doctor", "sepcializtion", "rating", "image")
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None
+
+
 class PatientPlanSerializer(serializers.ModelSerializer):
     patient_medicines = PatientMedicineSerializer(source="medicine_plan", many=True)
     doctor = SimpleUserSerializer(read_only=True)
@@ -187,6 +207,7 @@ class PatientPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientPlan
         fields = ("id", "doctor", "patient", "patient_medicines")
+
 
 # Serializer for creating a patient plan
 class CreatePatientPlanSerializer(serializers.ModelSerializer):
@@ -198,6 +219,7 @@ class CreatePatientPlanSerializer(serializers.ModelSerializer):
         model = PatientPlan
         fields = ("id", "doctor", "patient", "patient_medicines")
 
+
 # Serializer for creating a patient medicine entry
 class PatientMedicineCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -207,16 +229,18 @@ class PatientMedicineCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return PatientMedicine.objects.create(**validated_data)
 
+
 # Serializer for doctor reviews
 class DoctorReviewsSerializer(serializers.ModelSerializer):
     patient = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
-        fields = ('patient', 'review', "rating")
+        fields = ("patient", "review", "rating")
 
     def get_patient(self, obj):
         return obj.patient.full_name
+
 
 # Serializer for doctor comments
 class DoctorCommentSerializer(serializers.ModelSerializer):
@@ -229,6 +253,7 @@ class DoctorCommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return DoctorComment.objects.create(**validated_data)
 
+
 # Serializer for questions related to tests
 class QuestionSerializer(serializers.ModelSerializer):
     answer = serializers.CharField(read_only=True)
@@ -236,7 +261,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'text', 'answer', 'test']
+        fields = ["id", "text", "answer", "test"]
+
 
 # Serializer for tests
 class TestSerializer(serializers.ModelSerializer):
@@ -246,7 +272,7 @@ class TestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Test
-        fields = ['id', 'date', 'booking', 'questions', 'image_url', 'name']
+        fields = ["id", "date", "booking", "questions", "image_url", "name"]
 
     def get_image_url(self, obj):
         request = self.context.get("request")
@@ -254,10 +280,13 @@ class TestSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.booking.patient.image.url)
         return None
 
+
 # Serializer for prescriptions
 class PrescriptionSerializer(serializers.ModelSerializer):
     doctor = serializers.CharField(source="patient_plan.doctor.username")
-    specialization = serializers.CharField(source="patient_plan.doctor.doctor_profile.specialization")
+    specialization = serializers.CharField(
+        source="patient_plan.doctor.doctor_profile.specialization"
+    )
     doctor_phone_num = serializers.CharField(source="patient_plan.doctor.phone_number")
     patient = serializers.CharField(source="patient_plan.patient.username")
     patient_medicines = serializers.SerializerMethodField()
@@ -271,12 +300,13 @@ class PrescriptionSerializer(serializers.ModelSerializer):
             "doctor_phone_num",
             "specialization",
             "patient",
-            "patient_medicines"
+            "patient_medicines",
         )
 
     def get_patient_medicines(self, obj):
         patient_medicines = PatientMedicine.objects.filter(plan=obj.patient_plan)
         return SimplePatientMedicineSerializer(patient_medicines, many=True).data
+
 
 # Simplified serializer for doctor prescriptions
 class SimpleDocPrescriptionSerializer(serializers.ModelSerializer):
@@ -289,9 +319,12 @@ class SimpleDocPrescriptionSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         request = self.context.get("request")
-        if obj.patient_plan.patient.image and hasattr(obj.patient_plan.patient.image, "url"):
+        if obj.patient_plan.patient.image and hasattr(
+            obj.patient_plan.patient.image, "url"
+        ):
             return request.build_absolute_uri(obj.patient_plan.patient.image.url)
         return None
+
 
 # Simplified serializer for patient prescriptions
 class SimplePatientPrescriptionSerializer(serializers.ModelSerializer):
@@ -304,6 +337,8 @@ class SimplePatientPrescriptionSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         request = self.context.get("request")
-        if obj.patient_plan.patient.image and hasattr(obj.patient_plan.patient.image, "url"):
+        if obj.patient_plan.patient.image and hasattr(
+            obj.patient_plan.patient.image, "url"
+        ):
             return request.build_absolute_uri(obj.patient_plan.patient.image.url)
         return None

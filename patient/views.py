@@ -2,6 +2,7 @@ from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan, Prescription
 from doctor.serializers import (
     DoctorBookingCancelSerializer,
+    DoctorPlanSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
@@ -205,13 +206,14 @@ def doctor_review(request, pk):
 @permission_classes([IsAuthenticated])
 def get_patient_plans(request):
     patient = request.user
+    bookings = DoctorBooking.objects.filter(patient=patient)
     if patient.role != "PATIENT":
         return Response(
             {"message:": "you have to be a user to use this function"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
     patient_plans = PatientPlan.objects.filter(patient=patient)
-    serializer = PatientPlanSerializer(patient_plans, many=True)
+    serializer = DoctorPlanSerializer(patient_plans, many=True, context={"request":request})
     return Response(serializer.data)
 
 
