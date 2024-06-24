@@ -271,7 +271,7 @@ def get_doctor_bookings(request):
 
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
 
-    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True)
+    serializer = DoctorReadBookingSerializer(filtered_queryset, many=True, context={"request":request})
     return Response(serializer.data)
 
 

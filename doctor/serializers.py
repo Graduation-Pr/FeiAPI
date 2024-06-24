@@ -45,6 +45,7 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     patient = serializers.CharField(read_only=True)
     service = serializers.CharField(source='service.service')
+    doctor_image = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
@@ -55,9 +56,15 @@ class DoctorReadBookingSerializer(serializers.ModelSerializer):
             "service",
             "booking_date",
             "status",
-            "review",
-            "rating",
+            "doctor_image"
         )
+
+
+    def get_doctor_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None
 
 # Serializer for canceling a booking
 class DoctorBookingCancelSerializer(serializers.ModelSerializer):
