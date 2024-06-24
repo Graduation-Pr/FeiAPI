@@ -51,20 +51,25 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class LabReadBookingSerializer(serializers.ModelSerializer):
     lab = serializers.CharField(read_only=True)
-    id = serializers.CharField(read_only=True)
-    patient = serializers.CharField(read_only=True)
-    service = ServiceSerializer()
+    service = serializers.CharField(source="service.service")
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = LabBooking
         fields = (
             "id",
             "lab",
-            "patient",
             "service",
             "status",
             "booking_date",
+            "image"
         )
+
+
+    def get_image(self, obj):
+        request = self.context.get("request")       
+        return request.build_absolute_uri(obj.lab.image.url)
+    
 
 
 class LabBookingCancelSerializer(serializers.ModelSerializer):

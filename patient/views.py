@@ -303,7 +303,7 @@ def get_lab_bookings(request):
 
     filtered_queryset = filterset_class(request.query_params, queryset=queryset).qs
 
-    serializer = LabReadBookingSerializer(filtered_queryset, many=True)
+    serializer = LabReadBookingSerializer(filtered_queryset, many=True, context={"request":request})
     return Response(serializer.data)
 
 
