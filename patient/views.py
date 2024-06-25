@@ -2,7 +2,6 @@ from doctor.filters import DoctorBookingFilter
 from doctor.models import DoctorBooking, PatientPlan, Prescription
 from doctor.serializers import (
     DoctorBookingCancelSerializer,
-    DoctorPlanSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
     PatientPlanSerializer,
@@ -13,7 +12,7 @@ from doctor.serializers import (
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
-from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer
+from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer,DoctorPlanSerializer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from accounts.models import User

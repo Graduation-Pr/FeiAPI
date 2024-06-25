@@ -18,6 +18,7 @@ from accounts.models import DoctorProfile, User
 from .serializers import (
     DoctorListSerializer,
     DoctorPatientSerializer,
+    PatientPlanSerializer,
     DoctorReadBookingDetailsSerializer,
     DoctorReadBookingSerializer,
     DoctorBookingReschdualAndCompleteSerializer,
@@ -237,14 +238,35 @@ def get_patient_plan(request, pk):
     Retrieve the patient plan for a specific patient.
     """
     doctor = request.user
-    patient = get_object_or_404(User, id=pk)
     if doctor.role != "DOCTOR":
         return Response({"message:": "You have to be a doctor to use this function"}, status=status.HTTP_401_UNAUTHORIZED)
-    if patient.role != "PATIENT":
-        return Response({"message:": "You have to be a patient to use this function"}, status=status.HTTP_401_UNAUTHORIZED)
-    patient_plan = get_object_or_404(PatientPlan, patient=patient, doctor=doctor)
-    serializer = PatientPlanSerializer(patient_plan)
+    patient_plan = get_object_or_404(PatientPlan, id=pk)
+    if patient_plan.doctor != doctor:
+        return Response({"message:": "You don't have access for this plan"}, status=status.HTTP_401_UNAUTHORIZED)        
+    serializer = PatientPlanSerializer(patient_plan, context={"request":request})
     return Response(serializer.data)
+
+@swagger_auto_schema(
+    method='get',
+    responses={
+        200: PatientPlanSerializer(),
+        401: 'You have to be a doctor to use this function',
+        404: 'Patient or Patient Plan not found'
+    }
+)
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_patient_plans(request):
+    """
+    Retrieve the patient plan for a specific patient.
+    """
+    doctor = request.user
+    if doctor.role != "DOCTOR":
+        return Response({"message:": "You have to be a doctor to use this function"}, status=status.HTTP_401_UNAUTHORIZED)
+    patient_plans = PatientPlan.objects.filter(doctor=doctor)        
+    serializer = PatientPlanSerializer(patient_plans, context={"request":request}, many=True)
+    return Response(serializer.data)
+
 
 @swagger_auto_schema(
     method='post',

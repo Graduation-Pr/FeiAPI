@@ -142,3 +142,25 @@ class PatientReadBookingDetailsSerializer(serializers.ModelSerializer):
         if obj.doctor.image and hasattr(obj.doctor.image, "url"):
             return request.build_absolute_uri(obj.doctor.image.url)
         return None
+    
+    
+class DoctorPlanSerializer(serializers.ModelSerializer):
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    sepcializtion = serializers.CharField(
+        read_only=True, source="doctor.doctor_profile.specialization"
+    )
+    rating = serializers.CharField(
+        read_only=True, source="doctor.doctor_profile.rating"
+    )
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientPlan
+        fields = ("id", "doctor", "sepcializtion", "rating", "image")
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
+            return request.build_absolute_uri(obj.doctor.image.url)
+        return None

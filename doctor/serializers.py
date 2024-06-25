@@ -176,30 +176,24 @@ class SimplePatientMedicineSerializer(serializers.ModelSerializer):
         )
 
 
-# Serializer for patient plan details
-class DoctorPlanSerializer(serializers.ModelSerializer):
-    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
-    sepcializtion = serializers.CharField(
-        read_only=True, source="doctor.doctor_profile.specialization"
-    )
-    rating = serializers.CharField(
-        read_only=True, source="doctor.doctor_profile.rating"
-    )
-
+# Serializer for patient plan 
+class PatientPlanSerializer(serializers.ModelSerializer):
+    patient = serializers.CharField(read_only=True, source="patient.full_name")
+    location = serializers.CharField(read_only=True, source="patient.city")
     image = serializers.SerializerMethodField()
 
     class Meta:
         model = PatientPlan
-        fields = ("id", "doctor", "sepcializtion", "rating", "image")
+        fields = ("id", "patient", "location", "image")
 
     def get_image(self, obj):
         request = self.context.get("request")
-        if obj.doctor.image and hasattr(obj.doctor.image, "url"):
-            return request.build_absolute_uri(obj.doctor.image.url)
+        if obj.patient.image and hasattr(obj.patient.image, "url"):
+            return request.build_absolute_uri(obj.patient.image.url)
         return None
 
 
-class PatientPlanSerializer(serializers.ModelSerializer):
+class PatientPlanDetailSerializer(serializers.ModelSerializer):
     patient_medicines = PatientMedicineSerializer(source="medicine_plan", many=True)
     doctor = SimpleUserSerializer(read_only=True)
     patient = SimpleUserSerializer(read_only=True)
