@@ -11,7 +11,7 @@ from doctor.serializers import (
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
-from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer,DoctorPlanSerializer,DoctorPatientPlanDetailSerializer
+from patient.serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer,DoctorPlanSerializer,DoctorPatientPlanDetailSerializer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from accounts.models import User
@@ -20,7 +20,7 @@ from rest_framework import status
 from orders.models import CreditCard
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
-from .models import PatientMedicine, Question, Test
+from patient.models import PatientMedicine, Question, Test
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
 
