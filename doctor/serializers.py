@@ -192,17 +192,27 @@ class PatientPlanSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.patient.image.url)
         return None
 
+class SimplePatientPlanMedicineSerializer(serializers.ModelSerializer):
+    medicine_name = serializers.CharField(read_only=True, source="medicine.name")
+    class Meta:
+        model = PatientMedicine
+        fields = ("id", "medicine_name", "dose")
 
 class PatientPlanDetailSerializer(serializers.ModelSerializer):
-    patient_medicines = PatientMedicineSerializer(source="medicine_plan", many=True)
-    doctor = SimpleUserSerializer(read_only=True)
-    patient = SimpleUserSerializer(read_only=True)
+    patient_medicines = SimplePatientPlanMedicineSerializer(source="medicine_plan", many=True)
+    patient = serializers.CharField(read_only=True, source="patient.full_name")
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = PatientPlan
-        fields = ("id", "doctor", "patient", "patient_medicines")
+        fields = ("id", "patient", "image", "patient_medicines")
 
-
+    def get_image(self, obj):
+            request = self.context.get("request")
+            if obj.patient.image and hasattr(obj.patient.image, "url"):
+                return request.build_absolute_uri(obj.patient.image.url)
+            return None
+    
 # Serializer for creating a patient plan
 class CreatePatientPlanSerializer(serializers.ModelSerializer):
     patient_medicines = PatientMedicineSerializer(

@@ -1,6 +1,7 @@
 from accounts.models import User
 from rest_framework import serializers
 from doctor.models import DoctorBooking, PatientPlan
+from doctor.serializers import SimplePatientPlanMedicineSerializer
 from laboratory.models import LabBooking
 from orders.models import CreditCard
 
@@ -164,3 +165,19 @@ class DoctorPlanSerializer(serializers.ModelSerializer):
         if obj.doctor.image and hasattr(obj.doctor.image, "url"):
             return request.build_absolute_uri(obj.doctor.image.url)
         return None
+
+
+class DoctorPatientPlanDetailSerializer(serializers.ModelSerializer):
+    patient_medicines = SimplePatientPlanMedicineSerializer(source="medicine_plan", many=True)
+    doctor = serializers.CharField(read_only=True, source="doctor.full_name")
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientPlan
+        fields = ("id", "doctor", "image", "patient_medicines")
+
+    def get_image(self, obj):
+            request = self.context.get("request")
+            if obj.patient.image and hasattr(obj.patient.image, "url"):
+                return request.build_absolute_uri(obj.patient.image.url)
+            return None

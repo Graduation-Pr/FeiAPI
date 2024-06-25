@@ -4,7 +4,6 @@ from doctor.serializers import (
     DoctorBookingCancelSerializer,
     DoctorReadBookingSerializer,
     PatientMedicineSerializer,
-    PatientPlanSerializer,
     QuestionSerializer,
     TestSerializer,
     SimplePatientPrescriptionSerializer
@@ -12,7 +11,7 @@ from doctor.serializers import (
 from laboratory.filters import LabBookingFilter
 from laboratory.models import LabBooking, Laboratory
 from laboratory.serializers import LabReadBookingSerializer, LabResultSerializer
-from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer,DoctorPlanSerializer
+from .serializers import DoctorBookingSerializer, LabBookingSerializer, PatientReadBookingDetailsSerializer, PatientReadBookingSerializer,DoctorPlanSerializer,DoctorPatientPlanDetailSerializer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from accounts.models import User
@@ -235,7 +234,7 @@ def get_patient_plan(request, pk):
         patient_plan = PatientPlan.objects.filter(doctor=doctor, patient=patient).last()
     except PatientPlan.DoesNotExist:
         return Response({"message:": "patient plan does not exist"})
-    serializer = PatientPlanSerializer(patient_plan)
+    serializer = DoctorPatientPlanDetailSerializer(patient_plan, context={"request":request})
     return Response(serializer.data)
 
 

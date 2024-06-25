@@ -18,6 +18,7 @@ from accounts.models import DoctorProfile, User
 from .serializers import (
     DoctorListSerializer,
     DoctorPatientSerializer,
+    PatientPlanDetailSerializer,
     PatientPlanSerializer,
     DoctorReadBookingDetailsSerializer,
     DoctorReadBookingSerializer,
@@ -226,7 +227,7 @@ def complete_booking(request, pk):
 @swagger_auto_schema(
     method='get',
     responses={
-        200: PatientPlanSerializer(),
+        200: PatientPlanDetailSerializer(),
         401: 'You have to be a doctor to use this function',
         404: 'Patient or Patient Plan not found'
     }
@@ -243,7 +244,7 @@ def get_patient_plan(request, pk):
     patient_plan = get_object_or_404(PatientPlan, id=pk)
     if patient_plan.doctor != doctor:
         return Response({"message:": "You don't have access for this plan"}, status=status.HTTP_401_UNAUTHORIZED)        
-    serializer = PatientPlanSerializer(patient_plan, context={"request":request})
+    serializer = PatientPlanDetailSerializer(patient_plan, context={"request":request})
     return Response(serializer.data)
 
 @swagger_auto_schema(
