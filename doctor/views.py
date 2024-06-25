@@ -103,7 +103,7 @@ def doctor_patients(request):
     doctor = request.user
 
     if doctor.role == "DOCTOR":
-        bookings = DoctorBooking.objects.filter(doctor=doctor, status="completed")
+        bookings = DoctorBooking.objects.filter(doctor=doctor)
         patients = set(booking.patient for booking in bookings)
         paginator = PageNumberPagination()
         paginator.page_size = 5

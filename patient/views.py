@@ -343,20 +343,11 @@ def cancel_booking(request, pk):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def list_doctor_tests(request, pk):
+def list_doctor_tests(request):
     patient = request.user
-    try:
-        doctor = User.objects.get(id=pk)
-    except User.DoesNotExist:
-        return Response({"message": "Patient not found"}, status=404)
-
-    if doctor.role != "DOCTOR" or patient.role != "PATIENT":
-        return Response({"message": "You don't have permission"}, status=403)
-
     bookings = DoctorBooking.objects.filter(
-        patient=patient, doctor=doctor, status="completed"
+        patient=patient, status="completed"
     )
-    print(bookings)
     tests = Test.objects.filter(booking__in=bookings)
     paginator = PageNumberPagination()
     paginator.page_size = 5
