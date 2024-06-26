@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 INSTALLED_APPS = [
     "jazzmin",  # Admin theme
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     "laboratory",
     "doctor",
     "patient",
+    "chat",
     # External Modules
     "rest_framework_simplejwt",  # JWT authentication
     "rest_framework",  # DRF
@@ -198,4 +200,17 @@ JAZZMIN_SETTINGS = {
         "auth.group": "vertical_tabs",
     },
     "related_modal_active": False,
+}
+
+
+# Daphne
+ASGI_APPLICATION = "project.asgi.application"
+
+
+# Channels
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", "6379")]},
+    }
 }
