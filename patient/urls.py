@@ -19,19 +19,9 @@ from .views import (
 
 urlpatterns = [
     # Create a booking with a doctor
-    path(
-        "doctor/<int:doctor_id>/booking/",
-        create_doctor_booking,
-        name="create_doctor_booking",
-    ),
-    
+    path("doctor/<int:doctor_id>/booking/",create_doctor_booking,name="create_doctor_booking",),
     # Create a booking with a lab
-    path(
-        "lab/<int:lab_id>/booking/",
-        create_lab_booking,
-        name="create_lab_booking",
-    ),
-    
+    path("lab/<int:lab_id>/booking/",create_lab_booking,name="create_lab_booking",),
     # Post a review for a doctor
     path(
         "doctor/<int:pk>/review/",
