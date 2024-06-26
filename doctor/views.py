@@ -36,6 +36,7 @@ from .serializers import (
 )
 
 
+
 @swagger_auto_schema(
     method='get',
     responses={200: DoctorListSerializer(many=True)}
