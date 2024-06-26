@@ -20,7 +20,6 @@ import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -32,11 +31,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
-
 INSTALLED_APPS = [
-    "jazzmin",
+    "jazzmin",  # Admin theme
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -51,10 +48,10 @@ INSTALLED_APPS = [
     "doctor",
     "patient",
     # External Modules
-    "rest_framework_simplejwt",
-    "rest_framework",
-    "drf_spectacular",
-    "django_filters",
+    "rest_framework_simplejwt",  # JWT authentication
+    "rest_framework",  # DRF
+    "drf_spectacular",  # API schema/documentation
+    "django_filters",  # Filtering support
 ]
 
 MIDDLEWARE = [
@@ -66,16 +63,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-# EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-# EMAIL_HOST_USER = '28124321640f76'
-# EMAIL_HOST_PASSWORD = 'ba59b3bd000c8d'
-# EMAIL_PORT = '2525'
-# EMAIL_USE_TLS = False
-# EMAIL_USE_SSL = False
 
 
 ROOT_URLCONF = "project.urls"
@@ -98,10 +85,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "project.wsgi.application"
 
-
-# Database
+# Database configuration
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -109,10 +94,8 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -128,39 +111,31 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
+# Internationalization settings
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images) settings
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# AUTH_USER_MODEL = "accounts.User"
-
+# Custom user model
 AUTH_USER_MODEL = "accounts.User"
 
-
+# JWT Authentication settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+# Django Rest Framework settings
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -168,7 +143,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-
+# DRF Spectacular settings for API documentation
 SPECTACULAR_SETTINGS = {
     "TITLE": "FeiAPI - Pulmonary Embolism Diagnoses",
     "DESCRIPTION": """FeiAPI is a comprehensive platform designed to assist in the
@@ -183,23 +158,25 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": True,
 }
 
-
+# Media files settings
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# Django Heroku settings
 django_heroku.settings(locals())
 
-
+# Payment gateway secret key
 FLW_SEC_KEY = "FLWSECK_TEST-524202ecc0408804b8fbeae288174021-X"
 
-
+# Jazzmin settings for custom admin interface
 JAZZMIN_SETTINGS = {
     "site_title": "FeiAPI",
     "site_header": "Fei Administration",
     "site_brand": "Fei API",
-    "welcome_sign": "Welcome to Fei Adminstration",
+    "welcome_sign": "Welcome to Fei Administration",
     # "site_logo": "feiapi.jpg",
     "show_sidebar": True,
     "navigation_expanded": True,
@@ -222,4 +199,3 @@ JAZZMIN_SETTINGS = {
     },
     "related_modal_active": False,
 }
-
