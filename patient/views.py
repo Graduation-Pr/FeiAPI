@@ -263,19 +263,13 @@ def get_patient_plan(request, pk):
     Get a specific patient plan by doctor ID.
     """
     patient = request.user
-    doctor = get_object_or_404(User, id=pk)
-    if doctor.role != "DOCTOR":
-        return Response(
-            {"message:": "The ID passed is not a doctor ID"},
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
     if patient.role != "PATIENT":
         return Response(
             {"message:": "You have to be a patient to use this function"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
     try:
-        patient_plan = PatientPlan.objects.filter(doctor=doctor, patient=patient).last()
+        patient_plan = PatientPlan.objects.get(id=pk)
     except PatientPlan.DoesNotExist:
         return Response({"message:": "Patient plan does not exist"}, status=status.HTTP_404_NOT_FOUND)
     serializer = DoctorPatientPlanDetailSerializer(patient_plan, context={"request": request})
