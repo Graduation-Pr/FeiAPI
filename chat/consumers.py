@@ -67,6 +67,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_messages_count(self, connection):
         return Message.objects.filter(connection=connection).count()
 
+    @database_sync_to_async
+    def create_message(self, connection, user, message_text):
+        # Implement your message creation logic here
+        message = Message.objects.create(connection=connection, user=user, text=message_text)
+        return message
+
     async def receive_message_list(self, data):
         user = await self.get_user(self.scope)
         connection_id = data.get("connectionId")
@@ -80,26 +86,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         messages = await self.get_messages(connection, page, page_size)
-        serialized_messages = MessageSerializer(
-            messages, context={"user": user}, many=True
-        )
-        recipient = (
-            await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
-        )
-        serialized_friend = UserSerializer(recipient)
+        serialized_messages = await sync_to_async(lambda: MessageSerializer(messages, context={"user": user}, many=True).data)()
+        recipient = await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
+        serialized_friend = await sync_to_async(lambda: UserSerializer(recipient).data)()
         messages_count = await self.get_messages_count(connection)
         next_page = page + 1 if messages_count > (page + 1) * page_size else None
 
         data = {
-            "messages": serialized_messages.data,
+            "messages": serialized_messages,
             "next": next_page,
-            "friend": serialized_friend.data,
+            "friend": serialized_friend,
         }
         await self.send_group(user.username, "message.list", data)
-
-    @database_sync_to_async
-    def create_message(self, connection, user, text):
-        return Message.objects.create(connection=connection, user=user, text=text)
 
     async def receive_message_send(self, data):
         user = await self.get_user(self.scope)
@@ -113,18 +111,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         message = await self.create_message(connection, user, message_text)
-        recipient = (
-            await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
-        )
-        serialized_message = MessageSerializer(message, context={"user": user})
-        serialized_friend = UserSerializer(recipient)
+        recipient = await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
 
-        data = {"message": serialized_message.data, "friend": serialized_friend.data}
+        serialized_message = await sync_to_async(lambda: MessageSerializer(message, context={"user": user}).data)()
+        serialized_friend = await sync_to_async(lambda: UserSerializer(recipient).data)()
+        data = {"message": serialized_message, "friend": serialized_friend}
         await self.send_group(user.username, "message.send", data)
 
-        serialized_message = MessageSerializer(message, context={"user": recipient})
-        serialized_friend = UserSerializer(user)
-        data = {"message": serialized_message.data, "friend": serialized_friend.data}
+        serialized_message = await sync_to_async(lambda: MessageSerializer(message, context={"user": recipient}).data)()
+        serialized_friend = await sync_to_async(lambda: UserSerializer(user).data)()
+        data = {"message": serialized_message, "friend": serialized_friend}
         await self.send_group(recipient.username, "message.send", data)
 
     async def send_group(self, group, source, data):
