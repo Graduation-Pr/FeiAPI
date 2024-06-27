@@ -4,37 +4,32 @@ from channels.db import database_sync_to_async
 from accounts.models import User
 from chat.models import Message, Connection
 from chat.serializers import MessageSerializer, UserSerializer
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 import jwt
+import json
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = await self.get_user(self.scope)
-
         if not self.user.is_authenticated:
             await self.close()
             return
 
-        self.username = (
-            self.user.username
-        )  # Set self.username to the authenticated user's username
+        self.username = self.user.username  # Set self.username to the authenticated user's username
 
         # Join this user to a group with their username
         await self.channel_layer.group_add(self.username, self.channel_name)
         await self.accept()
 
-    async def get_user(self, scope):
+    @database_sync_to_async
+    def get_user(self, scope):
         if "token" in scope["query_string"].decode():
             token = scope["query_string"].decode().split("token=")[1]
             try:
                 payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-                user = await database_sync_to_async(User.objects.get)(
-                    id=payload["user_id"]
-                )
+                user = User.objects.get(id=payload["user_id"])
                 return user
             except jwt.ExpiredSignatureError:
                 return AnonymousUser()
@@ -56,33 +51,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
         elif data_source == "message.send":
             await self.receive_message_send(data)
 
+    @database_sync_to_async
+    def get_connection(self, connection_id):
+        return Connection.objects.get(id=connection_id)
+
+    @database_sync_to_async
+    def get_messages(self, connection, page, page_size):
+        return list(
+            Message.objects.filter(connection=connection).order_by("-created")[
+                page * page_size : (page + 1) * page_size
+            ]
+        )
+
+    @database_sync_to_async
+    def get_messages_count(self, connection):
+        return Message.objects.filter(connection=connection).count()
+
     async def receive_message_list(self, data):
-        user = self.scope["user"]
+        user = await self.get_user(self.scope)
         connection_id = data.get("connectionId")
         page = data.get("page", 0)
         page_size = 15
 
         try:
-            connection = await sync_to_async(Connection.objects.get)(id=connection_id)
+            connection = await self.get_connection(connection_id)
         except Connection.DoesNotExist:
             print("Error: couldn't find connection")
             return
 
-        messages = await sync_to_async(list)(
-            Message.objects.filter(connection=connection).order_by("-created")[
-                page * page_size : (page + 1) * page_size
-            ]
-        )
+        messages = await self.get_messages(connection, page, page_size)
         serialized_messages = MessageSerializer(
             messages, context={"user": user}, many=True
         )
         recipient = (
-            connection.sender if connection.sender != user else connection.receiver
+            await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
         )
         serialized_friend = UserSerializer(recipient)
-        messages_count = await sync_to_async(
-            Message.objects.filter(connection=connection).count
-        )()
+        messages_count = await self.get_messages_count(connection)
         next_page = page + 1 if messages_count > (page + 1) * page_size else None
 
         data = {
@@ -92,22 +97,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }
         await self.send_group(user.username, "message.list", data)
 
+    @database_sync_to_async
+    def create_message(self, connection, user, text):
+        return Message.objects.create(connection=connection, user=user, text=text)
+
     async def receive_message_send(self, data):
-        user = self.scope["user"]
+        user = await self.get_user(self.scope)
         connection_id = data.get("connectionId")
         message_text = data.get("message")
 
         try:
-            connection = await sync_to_async(Connection.objects.get)(id=connection_id)
+            connection = await self.get_connection(connection_id)
         except Connection.DoesNotExist:
             print("Error: couldn't find connection")
             return
 
-        message = await sync_to_async(Message.objects.create)(
-            connection=connection, user=user, text=message_text
-        )
+        message = await self.create_message(connection, user, message_text)
         recipient = (
-            connection.sender if connection.sender != user else connection.receiver
+            await database_sync_to_async(lambda: connection.sender if connection.sender != user else connection.receiver)()
         )
         serialized_message = MessageSerializer(message, context={"user": user})
         serialized_friend = UserSerializer(recipient)

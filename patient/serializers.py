@@ -17,6 +17,7 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
     payment_card = serializers.CharField(read_only=True)
     service_price = serializers.SerializerMethodField()
     patient_plan = serializers.SerializerMethodField()
+    connection_id = serializers.SerializerMethodField()
 
     class Meta:
         model = DoctorBooking
@@ -31,6 +32,7 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
             "service_price",
             "rating",
             "patient_plan",
+            "connection_id",
         ]
 
     def get_service_price(self, obj):
@@ -65,6 +67,11 @@ class DoctorBookingSerializer(serializers.ModelSerializer):
         doctor = User.objects.get(id=doctor_id)
         patient_plan = PatientPlan.objects.create(doctor=doctor, patient=patient)
         return patient_plan.id
+    
+
+    def get_connection_id(self, obj):
+        connection_id = self.context["connection_id"]
+        return connection_id
 
 
 class LabBookingSerializer(serializers.ModelSerializer):

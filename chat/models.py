@@ -11,8 +11,6 @@ class Connection(models.Model):
     receiver = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="received_connections"
     )
-    accepted = models.BooleanField(default=False)
-    updated = models.DateField(auto_now=True)
     created = models.DateField(auto_now_add=True)
 
     def __str__(self):

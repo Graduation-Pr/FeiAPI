@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "name", "thumbnail")
+        fields = ("username", "name")
 
     def get_name(self, obj):
         fname = obj.first_name.capitalize()

@@ -1,4 +1,5 @@
 # internal imports
+from chat.models import Connection
 from doctor.models import DoctorBooking, PatientPlan, Prescription
 from patient.models import PatientMedicine, Question, Test
 from laboratory.models import LabBooking, Laboratory
@@ -96,13 +97,21 @@ def create_doctor_booking(request, doctor_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    bookings = DoctorBooking.objects.filter(patient=user, doctor=doctor).count()
+    if bookings == 0:
+            connection = Connection.objects.create(sender=user, receiver=doctor)
+
+
     serializer = DoctorBookingSerializer(
         data=data,
-        context={"patient_id": user.id, "doctor_id": doctor_id, "payment_card": payment_card},
+        context={"patient_id": user.id, "doctor_id": doctor_id, "payment_card": payment_card, "connection_id":connection.id},
     )
+
 
     if serializer.is_valid():
         serializer.save()
+    
+    
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
     else:
         return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
