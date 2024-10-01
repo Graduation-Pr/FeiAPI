@@ -6,6 +6,12 @@
 
 The Smart Pulmonary Embolism Application is a comprehensive solution designed to aid in the diagnosis, treatment, and management of pulmonary embolism. By leveraging computer vision and AI, this application provides functionalities that streamline the process for both patients and doctors, enhancing communication, reducing errors, and improving overall healthcare delivery.
 
+## API Documention
+```
+https://documenter.getpostman.com/view/29368996/2sAXxJiF2k
+```
+
+
 ## Features
 
 1. **Doctor and Lab Communication**:
